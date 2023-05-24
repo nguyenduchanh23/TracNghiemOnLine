@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewBag.Title = "KetQua";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<p class="h3">Danh sách phòng thi</p>
+<div class="container-fluid">
+    <table id="dataGirdKetQua" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th class="text-center text-primary">Nội dung</th>
+                <th class="text-center text-primary">Học phần</th>
+                <th class="text-center text-primary">Số câu đúng</th>
+                <th class="text-center text-primary">Điểm</th>
+                <th class="text-center text-primary">Thời gian làm bài</th>
+                <th class="text-center text-primary mt-head">Ngày thi</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            <tr>
+              
+                <th>Thi kết thúc học kỳ</th>
+                <th>MMT</th>
+                <th>25/05/2023-13:55</th>
+                <th>Mở</th>
+                <th><button class="btn btn-primary">Vào thi</button></th>
+            </tr>
+            <tr>
+               
+                <th>Thi kết thúc học kỳ lần 2</th>
+                <th>MMT</th>
+                <th>29/05/2023-13:30</th>
+                <th>Mở</th>
+                <th><button class="btn btn-primary">Vào thi</button></th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var maSV = '@ViewBag.MaSV';
+    var deThiID = '@ViewBag.DeThiID';
+    $(document).ready(function () {
+        $('#dataGirdKetQua').DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "bInfo": false,
+            "bLengthChange": false,
+            "bPaginate": false,
+            "filter": true,
+            "searching": false,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/KetQuaApi/Get',
+                type: "post",
+                data: KetQua = {
+                    "MaSinhVien": maSV,
+                    "DeThiID": deThiID
+                },
+                dataType: 'json',
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].HocPhan = `${data[i].TenHocPhan} - ${data[i].MaHocPhan}`;
+                            data[i].ThoiGian = formatDate(data[i].ThoiGian);
+                            data[i].CauHoiDung = `${data[i].SoCauHoiDung}/${data[i].SoCauHoi}`
+                        }
+                    }
+                    return data;
+                }
+            },
+            columnDefs: [
+               
+            ],
+            deferRender: true,
+            "columns": [
+                { data: "NoiDung", "width": "400px", "class": "left-align" },
+                { data: "HocPhan", "width": "250px", "class": "text-center" },
+                { data: "CauHoiDung", "width": "250px", "class": "text-center" },
+                { data: "Diem", "width": "100px", "class": "text-center" },
+                { data: "ThoiGianLamBai", "width": "150px", "class": "text-center" },
+                { data: "ThoiGian", "width": "150px", "class": "text-center" },
+            ]
+        });
+    });
+
+    //format mmDDyyyyHHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${day}/${month}/${year} ${hour}:${minute}:${second}`
+    }
+</script>
+

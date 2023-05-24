@@ -1,0 +1,267 @@
+﻿
+@{
+    ViewBag.Title = "Thi";
+    var masv = HttpContext.Current.Session["MaSV"].ToString();
+}
+<br />
+<p class="h3">Danh sách phòng thi</p>
+<div class="container-fluid">
+    <table id="dataGirdPhongThi" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th class="text-center text-primary mt-head">STT</th>
+                <th class="text-center text-primary">Nội dung</th>
+                <th class="text-center text-primary">Học phần</th>
+                <th class="text-center text-primary">Thời gian thi</th>
+                <th class="text-center text-primary mt-head">Thời gian kết thúc</th>
+                <th class="text-center text-primary mt-head">Chức năng</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Modal vào phòng thi  -->
+<div class="modal fade" id="modalVaoPhongThi" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xác nhận vào phòng thi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input hidden id="deThiID" />
+                    <input hidden id="thoiGian" />
+                    <input id="maVaoThi" class="form-control" placeholder="Nhập mã vào phòng thi" />
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="vao-thi" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataDeThi = [];
+    $(document).ready(function () {
+        $('#dataGirdPhongThi').DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "bInfo": false,
+            "bLengthChange": false,
+            "bPaginate": false,
+            "filter": true,
+            "searching": false,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/PhongThiApi/GetByMSV?id=' + '@masv',
+                type: "post",
+                async: false,
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        dataDeThi = data;
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+
+                            // Thời gian kết thúc
+                            var thoiLuongThi = parseInt(data[i].ThoiLuongThi) * 60 * 1000;
+                            var tgKetThuc = new Date(data[i].ThoiGian).getTime() + thoiLuongThi;
+                            data[i].ThoiGianKetThuc = formatDate(tgKetThuc);
+                            //Hiển thị thời gian bắt đầu thi đã formart
+                            data[i].ThoiGianBatDau = formatDate(data[i].ThoiGian);
+                        }
+                    }
+                    return data;
+                }
+            },
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(0)', row).html(index + 1);
+            },
+            columnDefs: [
+                {
+                    targets: 2,
+                    render: function (data, type, row, meta) {
+                        return '<span id=n-"' + meta.row + '">' + data + '</span>'
+                    }
+                },
+
+                {
+                    targets: 5,
+                    render: function (data, type, row, meta) {
+                        return '<span title="Vào thi" class="btn btn-primary btn-vaothi" id=n-"' + meta.row + '">Vào thi</span>';
+
+                    }
+                },
+                {
+                    targets: [2, 3, 4],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            deferRender: true,
+            "columns": [
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "NoiDung", "width": "100px", "class": "left-align" },
+                { data: "TenHocPhan", "width": "150px", "class": "text-center" },
+                { data: "ThoiGianBatDau", "width": "180px", "class": "text-center" },
+                { data: "ThoiGianKetThuc", "width": "180px", "class": "text-center" },
+                { data: "", "width": "100px", "class": "text-center" },
+            ]
+        });
+        $('#dataGirdPhongThi tbody').on('click', '.btn-vaothi', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGirdPhongThi').DataTable().row(id).data();
+            $('#deThiID').val(data.DeThiID);
+            $('#thoiGian').val(data.ThoiGian);
+            $('#modalVaoPhongThi').modal('show');
+        });
+        $('#vao-thi').on('click', function () {
+            var maVaoThi = $('#maVaoThi').val();
+            var thoiGian = $('#thoiGian').val();
+            var deThiID = $('#deThiID').val();
+            if (checkEmptyBlank(maVaoThi)) {
+                alert('Mã vào thi trống');
+            } else {
+                var now = new Date().getTime();
+                var batDau = new Date(thoiGian).getTime();
+                var countdown = now - batDau
+                if (countdown >= 0) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/PhongThiApi/CheckMaVaoThi?ma=' + maVaoThi,
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data != 0) {
+                                var href = '/LamBaiThi/Thi?id=' + deThiID;
+                                window.location.href = href;
+                            } else {
+                                alert('Mã vào phòng thi sai !')
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi !');
+                        }
+                    });
+                } else {
+                    alert('Chưa đến thời gian thi!');
+                }
+            }
+        });
+        //TIME COUNTDOWN
+        window.onload = function () {
+          
+            // cập nhập thời gian sau mỗi 1 giây
+            var x = setInterval(function () {
+                dataDeThi.forEach(item => {
+                    // Thời gian hiện tại
+                    var now = new Date().getTime();
+
+                    // Thời gian đóng
+                    var thoiLuongThi = parseInt(item.ThoiLuongThi) * 60 * 1000;
+                    var tgKetThuc = new Date(item.ThoiGian).getTime() + thoiLuongThi;
+
+                    var countDown = now - tgKetThuc;
+                    if (countDown > 0) {
+                        $.ajax({
+                            type: 'post',
+                            async: false,
+                            url: APIURL + '/api/PhongThiApi/DongDeThi?deThiID=' + item.DeThiID,
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf-8',
+                            success: function (data) {
+                                if (data != 0) {
+                                    $('#dataGirdPhongThi').DataTable().ajax.reload().draw();
+                                    const index = dataDeThi.indexOf(item);
+                                    if (index > -1) { 
+                                        dataDeThi.splice(index, 1); 
+                                    }
+                                }
+                            },
+                            error: function (err) {
+
+                            }
+                        });
+                    }
+                })
+                // nếu thời gian kết thúc, hiển thị chuỗi thông báo
+                if (dataDeThi.length == 0) {
+                    clearInterval(x);
+                    //document.getelementbyid("demo").innerhtml = "thời gian đếm ngược đã kết thúc";
+                }
+            }, 1000);
+        };
+    });
+    //format mmDDyyyyHHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${day}/${month}/${year} ${hour}:${minute}:${second}`
+    }
+    //format ddMMyyyy
+    function formatDate2(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        return `${day}/${month}/${year}`
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    
+   
+
+</script>
+

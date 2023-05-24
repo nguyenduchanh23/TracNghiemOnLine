@@ -1,0 +1,520 @@
+﻿
+@{
+
+}
+<style>
+    .paginate_button {
+        margin: 10px;
+        font-weight: 900;
+        color: black;
+    }
+
+        .paginate_button.current {
+            color: red !important;
+        }
+</style>
+<div class="box-header">
+    <h3>Quản lý loại câu hỏi</h3>
+</div>
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active">
+        <div>
+            <div class="card mb-4">
+                <div class="card-header py-3 text-right">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modalLoaiCauHoiAdd">Thêm mới</button>
+                    <button class="btn btn-danger" id="show-deletes">Xóa</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="dataGridLoaiCauHoi" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="mt-head"></th>
+                                    <th class="text-center mt-head">STT</th>
+                                    <th class="text-center mt-head">Tên loại câu hỏi</th>
+                                    <th class="text-center mt-head">Mô tả</th>
+                                    <th class="text-center mt-head">Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal chỉnh sửa  -->
+<div class="modal fade" id="modalLoaiCauHoiEdit" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelEdit">Cập nhật loại câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formEdit">
+                    <input type="hidden" class="form-control" id="loaiIDEdit">
+                    <div class="form-group">
+                        <label for="tenLoaiEdit" class="editor-label">Tên loại<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="tenLoaiEdit">
+                    </div>
+                    <div class="form-group">
+                        <label for="moTaEdit" class="editor-label">Mô tả</label>
+                        <textarea class="form-control check-mdv" id="moTaEdit"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button type="button" id="edit" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm mới  -->
+<div class="modal fade" id="modalLoaiCauHoiAdd" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelAdd">Thêm mới loại câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd" ">
+                    <div class="form-group">
+                        <label for="tenLoaiAdd" class="editor-label">Tên loại<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="tenLoaiAdd">
+                    </div>
+                    <div class="form-group">
+                        <label for="moTaAdd" class="editor-label">Mô tả</label>
+                        <textarea class="form-control check-mdv" id="moTaAdd"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="add" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa  -->
+<div class="modal fade" id="modalLoaiCauHoiDelete" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa loại câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="loaiIDDelete" hidden />
+                    <label>Xác nhận xóa loại câu hỏi này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="delete" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalLoaiCauHoiDeletes" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa loại câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="text" hidden id="listLoaiID" />
+                    <label>Xác nhận xóa các loại câu hỏi này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="deletes" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataHocPhan = [];
+    $(document).ready(function () {
+
+        // datatable
+        $('#dataGridLoaiCauHoi').dataTable({
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/LoaiCauHoiApi/Gets',
+                type: "post",
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                        }
+                    }
+                    return data;
+                }
+            },
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+                {
+                    targets: [2, 3],
+                    "orderable": true,
+                },
+                {
+                    targets: 4,
+                    render: function (data, type, row, meta) {
+                        return '<span style="font-size: 25px; margin-right: 15px" data-toggle="tooltip" title="Chỉnh sửa" class="fas fa-pencil-alt  text-primary edit-btn" id=n-"' + meta.row + '">  </span><span style="font-size: 25px" data-toggle="tooltip" title="Xóa" class="fa fa-trash delete-btn text-danger" id=n-"' + meta.row + '"></span>';
+                    }
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            order: [[1, 'asc']],
+            deferRender: true,
+            "columns": [
+                { data: "LoaiID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "TenLoai", "width": "400px", "class": "left-align" },
+                { data: "MoTa", "width": "150px", "class": "left-center" },
+                { data: "", "width": "100px", "class": "text-center" },
+            ]
+        });
+        $('#dataGridLoaiCauHoi tbody').on('click', '.edit-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridLoaiCauHoi').DataTable().row(id).data();
+            $('#loaiIDEdit').val(data.LoaiID);
+            $('#tenLoaiEdit').val(data.TenLoai);
+            $('#moTaEdit').val(data.MoTa);
+            $('#modalLoaiCauHoiEdit').modal('show');
+        });
+        $('#dataGridLoaiCauHoi tbody').on('click', '.delete-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridLoaiCauHoi').DataTable().row(id).data();
+            $('#loaiIDDelete').val(data.LoaiID);
+            $('#modalLoaiCauHoiDelete').modal('show');
+        });
+        $('#add').on('click', function () {
+            var tenLoai = $('#tenLoaiAdd').val();
+            var moTa = $('#moTaAdd').val();
+            if (checkEmptyBlank(moTa)) {
+                moTa = "";
+            } else {
+                moTa = moTa.trim();
+            }
+            if (checkEmptyBlank(tenLoai)) {
+                alert("Thông tin bắt buộc không được để trống");
+            } else {
+                var dataCheck = {
+                    "LoaiID": 0,
+                    "TenLoai": tenLoai,
+                }
+                var dataAdd = {
+                    "TenLoai": tenLoai.trim(),
+                    "MoTa": moTa
+                }
+                var check = false;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/LoaiCauHoiApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (!check) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/LoaiCauHoiApi/Add',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataAdd),
+                        success: function (data) {
+                            alert("Thêm loại câu hỏi thành công");
+                            $("#modalLoaiCauHoiAdd").modal('hide');
+                            $('#dataGridLoaiCauHoi').DataTable().ajax.reload().draw();
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Thêm loại câu hỏi thất bại');
+                        }
+                    });
+                } else {
+                    alert('Tên loại câu hỏi đã tồn tại');
+                }
+            }
+        });
+        $('#edit').on('click', function () {
+            var loaiID = $('#loaiIDEdit').val();
+            var tenLoai = $('#tenLoaiEdit').val();
+            var moTa = $('#moTaEdit').val();
+            if (checkEmptyBlank(moTa)) {
+                moTa = "";
+            } else {
+                moTa = moTa.trim();
+            }
+            if (checkEmptyBlank(tenLoai)) {
+                alert("Thông tin bắt buộc không được để trống");
+            } else {
+                var dataCheck = {
+                    "LoaiID": loaiID,
+                    "TenLoai": tenLoai.trim(),
+                }
+                var dataEdit = {
+                    "LoaiID": loaiID,
+                    "TenLoai": tenLoai.trim(),
+                    "MoTa": moTa
+                }
+                var check = false;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/LoaiCauHoiApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (!check) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/LoaiCauHoiApi/Edit',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataEdit),
+                        success: function (data) {
+                            alert("Cập nhật loại câu hỏi thành công");
+                            $("#modalLoaiCauHoiEdit").modal('hide');
+                            $('#dataGridLoaiCauHoi').DataTable().ajax.reload().draw();
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Cập nhật loại câu hỏi thất bại');
+                        }
+                    });
+                } else {
+                    alert('Ten loại câu hỏi đã tồn tại');
+                }
+            }
+        });
+        $('#delete').on('click', function () {
+            var loaiID = $('#loaiIDDelete').val();
+            if (!checkEmptyBlank(loaiID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/LoaiCauHoiApi/Delete?id=' + loaiID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalLoaiCauHoiDelete').modal('hide');
+                        $('#dataGridLoaiCauHoi').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa loại câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        $('#show-deletes').on('click', function () {
+            var oTable = $('#dataGridLoaiCauHoi').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn loại câu hỏi cần xóa");
+            } else {
+                $('#listLoaiID').val(list);
+                $('#modalLoaiCauHoiDeletes').modal('show');
+            }
+
+        });
+        $('#deletes').on('click', function () {
+            var listID = $('#listLoaiID').val();
+            if (!checkEmptyBlank(listID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/LoaiCauHoiApi/Deletes?listID=' + listID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalLoaiCauHoiDeletes').modal('hide');
+                        $('#dataGridLoaiCauHoi').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa loại câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+
+        $("#modalLoaiCauHoiAdd").on('hide.bs.modal', function () {
+            resetForm();
+        });
+    });
+
+
+    function AddHocPhan() {
+        var tenHocPhan = $('#tenHocPhanAdd').val();
+        var maHocPhan = $('#maHocPhanAdd').val();
+        var moTa = $('#moTaAdd').val();
+        if (checkEmptyBlank(tenHocPhan) || checkEmptyBlank(maHocPhan)) {
+            alert("Thông tin bắt buộc không được để trống");
+        } else {
+            var dataCheck = {
+                "HocPhanID": 0,
+                "MaHocPhan": maHocPhan,
+            }
+            var dataHocPhanAdd = {
+                "HocPhanID": hocPhanID,
+                "TenHocPhan": tenHocPhan,
+                "MaHocPhan": maHocPhan,
+                "MoTa": moTa.trim()
+            }
+            var check = false;
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/HocPhanApi/Check',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataCheck),
+                success: function (data) {
+                    if (data != 0) {
+                        check = true;
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+            if (!check) {
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/HocPhanApi/Add',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataHocPhanAdd),
+                    success: function (data) {
+                        alert("Thêm mới học phần thành công");
+                        $("#modalAddHocPhan").modal('hide');
+                        $('#dataGridHocPhan').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Thêm mới học phần thất bại');
+                    }
+                });
+            } else {
+                alert('Mã học phần đã tồn tại');
+            }
+        }
+    }
+    function DeletesHocPhan() {
+        var listHocPhanID = $('#listHocPhanID').val();
+        if (checkEmptyBlank(listHocPhanID)) {
+            alert("Chọn học phần cần xóa");
+        } else {
+            $.ajax({
+                type: "delete",
+                async: false,
+                url: APIURL + '/api/HocPhanApi/Deletes?listID=' + listHocPhanID,
+                contentType: 'application/json: charset=uft-8',
+                success: function (data) {
+                    $('#modalDeletesHocPhan').modal('hide');
+                    $('#dataGridHocPhan').DataTable().ajax.reload().draw();
+                },
+                error: function (err) {
+                    alert('Lỗi ! Xóa học phần thất bại');
+                }
+            });
+        }
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    // RESET FORM
+    function resetForm() {
+        $('input').val('');
+        $('textarea').val('');
+    }
+
+
+</script>
+
+

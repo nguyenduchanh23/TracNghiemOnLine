@@ -1,0 +1,1335 @@
+﻿
+@{
+
+}
+<style>
+    .paginate_button {
+        margin: 10px;
+        font-weight: 900;
+        color: black;
+    }
+
+        .paginate_button.current {
+            color: red !important;
+        }
+
+    .btn_hide {
+        display: none;
+    }
+
+    .tox-notification {
+        display: none !important
+    }
+
+    .show_input {
+        display: none
+    }
+
+    .pointer{
+        cursor: pointer
+    }
+</style>
+
+<script src="https://cdn.tiny.cloud/1/[API_KEY_HERE]/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<div class="box-header">
+    <h3>Quản lý câu hỏi</h3>
+</div>
+
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active">
+        <div>
+            <div class="card-header py-3" style="margin-top:10px">
+                <div class="box-body row">
+                    <div class="col-md-3">
+                        <select id="filter_loaicauhoi_tab1" class="text-right" style="width:100%">
+                            <option></option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="filter_hocphan_tab1" class="text-right" style="width:100%">
+                            <option></option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filter_mucdo_tab1" class="text-right" style="width:100%">
+                            <option selected></option>
+                            <option value="1">Dễ</option>
+                            <option value="2">Trung bình</option>
+                            <option value="3">Khó</option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header py-3 text-right">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modalCauHoiAdd">Thêm mới</button>
+                    <button class="btn btn-danger" id="show-deletes">Xóa</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="dataGridCauHoi_tab1" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="mt-head"></th>
+                                    <th class="text-center text-primary mt-head">STT</th>
+                                    <th class="text-center text-primary">Câu hỏi</th>
+                                    <th class="text-center text-primary">Mã Học phần</th>
+                                    <th class="text-center text-primary">Loại câu hỏi</th>
+                                    <th class="text-center text-primary">Mức độ</th>
+                                    <th class="text-center text-primary mt-head">Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa tab1 -->
+<div class="modal fade" id="modalCauHoiEdit" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelEdit">Cập nhật câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formEdit">
+                    <input type="hidden" class="form-control" id="cauHoiIDEdit">
+                    <div role="form" id="formAdd">
+                        <div class="form-group">
+                            <label for="noiDungEdit" class="editor-label">Nội dung câu hỏi<span class="text-danger"> *</span></label>
+                            <textarea class="form-control check-mdv" id="noiDungEdit"></textarea>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6 form-group">
+                                <label for="select-HocPhanEdit" class="editor-label">Học phần<span class="text-danger"> *</span></label>
+                                <select class="form-control" id="select-HocPhanEdit">
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="editor-label">Mức độ<span class="text-danger"> *</span></label>
+                                <div class="form-control check-mdv">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="mucDoEdit" id="muc-do-de-edit" value="1" checked>
+                                        <label class="form-check-label" for="muc-do-de">Dễ</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="mucDoEdit" id="muc-do-trung-binh-edit" value="2">
+                                        <label class="form-check-label" for="muc-do-trung-binh">Trung bình</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="mucDoEdit" id="muc-do-kho-edit" value="3">
+                                        <label class="form-check-label" for="muc-do-kho">Khó</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12 form-group">
+                                <label for="select-LoaiCauHoiEdit" class="editor-label">Loại câu hỏi<span class="text-danger"> *</span></label>
+                                <select class="form-control" id="select-LoaiCauHoiEdit">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group row">
+                                <label for="" class="editor-label col-md-12">Đáp án<span class="text-danger"> *</span></label>
+                                <div class="form-group col-md-12" id="formDapAnEdit">
+                                    @*<div id="dap-an-1_Edit" class="input-group">
+                                            <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAn1_Edit"></textarea>
+                                        </div>
+                                        <div style="margin-top:5px;" id="dap-an-2_Edit" class="input-group">
+                                            <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAn2_Edit"></textarea>
+                                        </div>
+                                        <div style="margin-top:5px;" id="dap-an-3_Edit" class="input-group">
+                                            <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAn3_Edit"></textarea>
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row col-md-12">
+                            <button id="edit-dapan-input" type="button" class="btn btn-primary"><span class="fa fa-plus-circle"> Thêm đáp án</span></button>
+                        </div>
+                        <div>
+                            <div class="form-group row">
+                                <label for="" class="editor-label col-md-12">Đáp án đúng<span class="text-danger"> *</span></label>
+                                <div class="form-group col-md-12" id="formDapAnDungEdit">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="btn-edit-show" class="form-group row col-md-12 show_input">
+                            <button id="edit-dapan-dung-input" type="button" class="btn btn-primary"><span class="fa fa-plus-circle"> Thêm đáp án</span></button>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="group-button-action">
+                                <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                                <button id="btn-edit-tab1" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm mới tab1  -->
+<div class="modal fade" id="modalCauHoiAdd" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelAdd">Thêm mới câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <div class="form-group">
+                        <label for="cauHoiAdd" class="editor-label">Nội dung câu hỏi<span class="text-danger"> *</span></label>
+                        <textarea class="form-control check-mdv" id="cauHoiAdd"></textarea>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 form-group">
+                            <label for="select-HocPhanAdd" class="editor-label">Học phần<span class="text-danger"> *</span></label>
+                            <select class="form-control" id="select-HocPhanAdd">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="editor-label">Mức độ<span class="text-danger"> *</span></label>
+                            <div class="form-control check-mdv">
+                                <div class="form-check form-check-inline">
+                                    <input checked class="form-check-input" type="radio" name="mucDoAdd" id="muc-do-de" value="1">
+                                    <label class="form-check-label" for="muc-do-de">Dễ</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mucDoAdd" id="muc-do-trung-binh" value="2">
+                                    <label class="form-check-label" for="muc-do-trung-binh">Trung bình</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="mucDoAdd" id="muc-do-kho" value="3">
+                                    <label class="form-check-label" for="muc-do-kho">Khó</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12 form-group">
+                            <label for="select-LoaiCauHoiAdd" class="editor-label">Loại câu hỏi<span class="text-danger"> *</span></label>
+                            <select class="form-control" id="select-LoaiCauHoiAdd">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group row">
+                            <label for="" class="editor-label col-md-12">Đáp án<span class="text-danger"> *</span></label>
+                            <div class="form-group col-md-12" id="formDapAn">
+                                <div id="dap-an-0" class="input-group date yyyy">
+                                    <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAn0"></textarea>
+
+                                </div>
+                                @*<div style="margin-top:5px;" id="dap-an-2" class="input-group date yyyy">
+                                        <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAn2"></textarea>
+
+                                    </div>
+                                    <div style="margin-top:5px;" id="dap-an-3" class="input-group date yyyy">
+                                        <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAn3"></textarea>
+
+                                    </div>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <button id="add-dapan-input" type="button" class="btn btn-primary"><span class="fa fa-plus-circle"> Thêm đáp án</span></button>
+                    </div>
+                    <div>
+                        <div class="form-group row">
+                            <label for="" class="editor-label col-md-12">Đáp án đúng<span class="text-danger"> *</span></label>
+                            <div class="form-group col-md-12" id="formDapAnDung">
+                                <div id="dap-an-dung-0" class="input-group">
+                                    <textarea type="text" class="form-control" placeholder="Nhập đáp án" id="dapAnDung0"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="btn-show" class="form-group row col-md-12 show_input">
+                        <button id="add-dapan-dung-input" type="button" class="btn btn-primary"><span class="fa fa-plus-circle"> Thêm đáp án</span></button>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="btn-add" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa  -->
+<div class="modal fade" id="modalCauHoiDelete" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="cauHoiIDDelete" class="form-control" hidden />
+                    <label>Xác nhận xóa câu hỏi này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="btn-delete" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalCauHoiDeletes" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa câu hỏi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="hidden" class="form-control" id="listCauHoiID" />
+                    <label>Xác nhận xóa các câu hỏi này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="deletes" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal Detail-->
+<div class="modal fade" id="modalCauHoiDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="loai-hinh-title">Xem chi tiết câu hỏi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dapAnDetail">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label"><strong>Nội dung:</strong></label>
+                    <label id="noiDungDetail" class="col-sm-9 col-form-label "></label>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label"><strong>Học phần:</strong></label>
+                    <label id="hocPhanDetail" class="col-sm-9 col-form-label"></label>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label"><strong>Loại câu hỏi:</strong></label>
+                    <label id="loaiCauHoiDetail" class="col-sm-9 col-form-label"></label>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label"><strong>Mức độ:</strong></label>
+                    <label id="mucDoDetail" class="col-sm-9 col-form-label"></label>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label"><strong>Đáp án:</strong></label>
+                    <label class="col-sm-9 col-form-label"></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    tinyMCE.init({
+        mode: "exact",
+        elements: "cauHoiAdd"
+    });
+    tinyMCE.init({
+        mode: "exact",
+        elements: "noiDungEdit"
+    });
+</script>
+
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataCauHoi = [];
+    var idDapAn = 0;
+    var arrIDDapAn = [0];
+
+    var idDapAnDung = 0;
+    var arrIDDapAnDung = [0];
+
+    var idDapAnEdit = 0;
+    var arrIDDapAnEdit = [];
+
+    var idDapAnDungEdit = 0;
+    var arrIDDapAnDungEdit = [];
+
+    var arrDapAn = []; // Dap An Detail
+    var dataFilter = [] // Ket qua loc
+
+    // TINYMCE
+    tinymce.init({ selector: 'cauHoiAdd' });
+    tinymce.init({ selector: 'noiDungEdit' });
+    $(document).ready(function () {
+        LoadLoaiCauHoi();
+        LoadHocPhan();
+        LoadCauHoi();
+        //
+
+        $(`#select-HocPhanAdd`).select2({
+            theme: 'bootstrap4',
+            placeholder: "--Chọn--",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#select-LoaiCauHoiAdd`).select2({
+            theme: 'bootstrap4',
+            placeholder: "--Chọn--",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#select-HocPhanEdit`).select2({
+            theme: 'bootstrap4',
+            placeholder: "--Chọn--",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#select-LoaiCauHoiEdit`).select2({
+            theme: 'bootstrap4',
+            placeholder: "--Chọn--",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#filter_hocphan_tab1`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn học phần",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#filter_mucdo_tab1`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn mức độ",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#filter_loaicauhoi_tab1`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn loại câu hỏi",
+            width: 'resolve',
+            allowClear: true
+        });
+        //
+        function fileReader(oEvent) {
+            var oFile = oEvent.target.files[0];
+            var sFilename = oFile.name;
+
+            var reader = new FileReader();
+            var result = {};
+            reader.onload = function (e) {
+                var data = e.target.result;
+                data = new Uint8Array(data);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var result = {};
+                workbook.SheetNames.forEach(function (sheetName) {
+                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+                    if (roa.length) result[sheetName] = roa;
+                });
+                // see the result, caution: it works after reader event is done.
+
+                console.log(result);
+                CauHoiAdd(result);
+            };
+
+            reader.readAsArrayBuffer(oFile);
+        };
+
+        // ddMMyyyy
+        $('.dd-mm-yyyy').datetimepicker({
+            "locale": 'vi',
+            "format": "DD/MM/YYYY",
+        });
+        // datatable
+        var tableCauHoi = $('#dataGridCauHoi_tab1').dataTable({
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/CauHoiApi/Gets',
+                type: "post",
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        data = dataCauHoi;
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                            data[i].HocPhan = `${data[i].MaHocPhan}-${data[i].TenHocPhan}`;
+                            if (data[i].MucDo == 1) {
+                                data[i].txtMucDo = "Dễ"
+                            } else if (data[i].MucDo == 2) {
+                                data[i].txtMucDo = "Trung bình"
+                            } else data[i].txtMucDo = "Khó"
+                        }
+                    }
+                    return data;
+                }
+            },
+
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+                {
+                    targets: 2,
+                    render: function (data, type, row, meta) {
+                        return '<span id=n-"' + meta.row + '">' + data + '</span>'
+                    }
+                },
+                {
+                    targets: 6,
+                    render: function (data, type, row, meta) {
+                        return '<span style="font-size: 25px; margin-right: 15px" data-toggle="tooltip" title="Chỉnh sửa" class="fas fa-pencil-alt  text-primary edit-btn" id=n-"' + meta.row + '">  </span><span style="font-size: 25px" data-toggle="tooltip" title="Xóa" class="fa fa-trash delete-btn text-danger" id=n-"' + meta.row + '"></span>';
+                    }
+                },
+                {
+                    targets: [2, 3, 4, 5],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            deferRender: true,
+            "columns": [
+                { data: "CauHoiID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                {
+                    data: "NoiDung", "width": "700px", "class": "left-align text-primary detail-link pointer" },
+                { data: "MaHocPhan", "width": "200px", "class": "text-center" },
+                { data: "TenLoai", "width": "200px", "class": "text-center" },
+                { data: "txtMucDo", "width": "100px", "class": "text-center" },
+                { data: "", "width": "100px", "class": "text-center" },
+            ]
+        });
+        $('#dataGridCauHoi_tab1 tbody').on('click', '.edit-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridCauHoi_tab1').DataTable().row(id).data();
+            LoadDapAn_Sai(data.CauHoiID);
+            LoadDapAn_Dung(data.CauHoiID);
+            $('#cauHoiIDEdit').val(data.CauHoiID);
+            //$('#').val(data.NoiDung)
+            tinymce.get("noiDungEdit").setContent(data.NoiDung);
+            $('#select-HocPhanEdit').val(data.HocPhanID).trigger('change');
+            $('#select-LoaiCauHoiEdit').val(data.LoaiID).trigger('change');
+            if (data.LoaiID == 6) {
+                $('#btn-edit-show').removeClass('show_input');
+            } if (data.LoaiID == 5) {
+                $('#btn-edit-show').addClass('show_input');
+            }
+            $('input:radio[name="mucDoEdit"]').val([data.MucDo]);
+            $('#modalCauHoiEdit').modal('show');
+        });
+        $('#dataGridCauHoi_tab1 tbody').on('click', '.delete-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridCauHoi_tab1').DataTable().row(id).data();
+            $('#cauHoiIDDelete').val(data.CauHoiID);
+            $('#modalCauHoiDelete').modal('show');
+        });
+        $('#show-deletes').on('click', function () {
+            var oTable = $('#dataGridCauHoi_tab1').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn câu hỏi cần xóa");
+            } else {
+                $('#listCauHoiID').val(list);
+                $('#modalCauHoiDeletes').modal('show');
+            }
+
+        });
+        // detail
+        $('#dataGridCauHoi_tab1 tbody').on('click', '.detail-link', function () {
+            var id = $(this).children().attr("id").match(/\d+/)[0];
+            var data = $('#dataGridCauHoi_tab1').DataTable().row(id).data();
+            $('#noiDungDetail').html(data.NoiDung);
+            $('#hocPhanDetail').html(`${data.HocPhan}`);
+            $('#loaiCauHoiDetail').html(data.TenLoai);
+            $('#mucDoDetail').html(data.txtMucDo);
+            arrDapAn = DapAnGetsByID(data.CauHoiID);
+            if (arrDapAn != "" && arrDapAn != null) {
+                for (var i = 0; i < arrDapAn.length; i++) {
+                    if (arrDapAn[i].DapAnDung == 1) {
+                        $('#dapAnDetail').append(`<div class="form-group row" id=${i}><label class="col-sm-3 col-form-label text-center"><strong>${String.fromCharCode(65 + i)}</strong></label>`
+                            + `<label class="col-sm-9 col-form-label text-danger">${arrDapAn[i].CauTraLoi}</label></div>`)
+                    } else {
+                        $('#dapAnDetail').append(`<div  class="form-group row" id=${i}><label class="col-sm-3 col-form-label text-center"><strong>${String.fromCharCode(65 + i)}</strong></label>`
+                            + `<label class="col-sm-9 col-form-label">${arrDapAn[i].CauTraLoi}</label></div>`)
+                    }
+                }
+            }
+            $('#modalCauHoiDetail').modal('show');
+        });
+        $('#btn-add').on('click', function () {
+            var noiDung = tinymce.get("cauHoiAdd").getContent();
+            var loaiID = $('#select-LoaiCauHoiAdd').val();
+            var hocPhanID = $('#select-HocPhanAdd').val();
+            var mucDo = $('input[type="radio"][name="mucDoAdd"]:checked').val();
+            if (checkEmptyBlank(noiDung) || checkEmptyBlank(loaiID) || checkEmptyBlank(hocPhanID) || checkEmptyBlank(mucDo)) {
+                alert('Thông tin bắt buộc không được trống');
+            } else {
+                for (var i = 0; i < arrIDDapAn.length; i++) {
+                    var dapAn = $(`#dapAn${arrIDDapAn[i]}`).val();
+                    if (checkEmptyBlank(dapAn)) {
+                        alert('Thông tin bắt buộc không được trống');
+                        return;
+                    }
+                }
+                for (var i = 0; i < arrIDDapAnDung.length; i++) {
+                    var dapAnDung = $(`#dapAnDung${arrIDDapAnDung[i]}`).val();
+                    if (checkEmptyBlank(dapAnDung)) {
+                        alert('Thông tin bắt buộc không được trống');
+                        return;
+                    }
+                }
+                // ADD CauHoi
+                var dataCauHoiAdd = {
+                    "NoiDung": noiDung.trim(),
+                    "LoaiID": parseInt(loaiID),
+                    "MucDo": parseInt(mucDo),
+                    "HocPhanID": parseInt(hocPhanID)
+                }
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/CauHoiApi/Add',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCauHoiAdd),
+                    success: function (data) {
+                        if (data != null) {
+                            alert("Thêm câu hỏi thành công");
+                            DapAnAdd(data.CauHoiID);
+                            $("#modalCauHoiAdd").modal('hide');
+                            LoadCauHoi();
+                            $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Thêm câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        $('#btn-edit-tab1').on('click', function () {
+            var cauHoiID = $('#cauHoiIDEdit').val();
+            var noiDung = tinymce.get("noiDungEdit").getContent();
+            var loaiID = $('#select-LoaiCauHoiEdit').val();
+            var hocPhanID = $('#select-HocPhanEdit').val();
+            var mucDo = $('input[type="radio"][name="mucDoEdit"]:checked').val();
+            if (checkEmptyBlank(noiDung) || checkEmptyBlank(loaiID) || checkEmptyBlank(hocPhanID) || checkEmptyBlank(mucDo)) {
+                alert('Thông tin bắt buộc không được trống');
+            } else {
+                if (arrIDDapAnEdit.length == 0) {
+                    alert('Thông tin bắt buộc không được trống');
+                    return;
+                }
+                if (arrIDDapAnDungEdit.length == 0) {
+                    alert('Thông tin bắt buộc không được trống');
+                    return;
+                }
+                for (var i = 0; i < arrIDDapAnEdit.length; i++) {
+                    var dapAn = $(`#dapAn${arrIDDapAnEdit[i]}_Edit`).val();
+                    if (checkEmptyBlank(dapAn)) {
+                        alert('Thông tin bắt buộc không được trống');
+                        return;
+                    }
+                }
+                for (var i = 0; i < arrIDDapAnDungEdit.length; i++) {
+                    var dapAnDung = $(`#dapAnDung${arrIDDapAnDungEdit[i]}_Edit`).val();
+                    if (checkEmptyBlank(dapAnDung)) {
+                        alert('Thông tin bắt buộc không được trống');
+                        return;
+                    }
+                }
+                // EDIT CauHoi
+                var dataCauHoiEdit = {
+                    "CauHoiID": parseInt(cauHoiID),
+                    "NoiDung": noiDung.trim(),
+                    "LoaiID": parseInt(loaiID),
+                    "MucDo": parseInt(mucDo),
+                    "HocPhanID": parseInt(hocPhanID)
+                }
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/CauHoiApi/Edit',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCauHoiEdit),
+                    success: function (data) {
+                        if (data != null) {
+                            alert("Cập nhật câu hỏi thành công");
+                            DapAnDeletes(data.CauHoiID);
+                            $("#modalCauHoiEdit").modal('hide');
+                            LoadCauHoi();
+                            $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Thêm câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        $('#btn-delete').on('click', function () {
+            var cauHoiID = $('#cauHoiIDDelete').val();
+            if (!checkEmptyBlank(cauHoiID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/CauHoiApi/Delete?id=' + cauHoiID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalCauHoiDelete').modal('hide');
+                        LoadCauHoi();
+                        $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        $('#deletes').on('click', function () {
+            var listID = $('#listCauHoiID').val();
+            if (!checkEmptyBlank(listID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/CauHoiApi/Deletes?listID=' + listID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalCauHoiDeletes').modal('hide');
+                        LoadCauHoi();
+                        $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+
+
+        // ADD INPUT
+        $('#add-dapan-input').on('click', function () {
+            input = jQuery(`<div style="margin-top:5px;" id="dap-an-${idDapAn + 1}" class="input-group date yyyy">`
+                + `<textarea type = "text" class= "form-control" placeholder = "Nhập đáp án" id = "dapAn${idDapAn + 1}"></textarea>`
+                + `<div onclick="RemoveInput(${idDapAn + 1})" class="input-group-addon input-group-append">`
+                + '<div class="input-group-text">'
+                + `<i class="fa fa-times"></i>`
+                + '</div>'
+                + '</div>'
+                + '</div>');
+            $('#formDapAn').append(input);
+            // Số thứ tự ID của input
+            arrIDDapAn.push(idDapAn + 1);
+            idDapAn += 1;
+        });
+        // ADD INPUT DAP AN DUNG
+        $('#add-dapan-dung-input').on('click', function () {
+            input = jQuery(`<div style="margin-top:5px;" id="dap-an-dung-${idDapAnDung + 1}" class="input-group">`
+                + `<textarea type = "text" class= "form-control" placeholder = "Nhập đáp án" id = "dapAnDung${idDapAnDung + 1}"></textarea>`
+                + `<div onclick="RemoveInput2(${idDapAnDung + 1})" class="input-group-addon input-group-append">`
+                + '<div class="input-group-text">'
+                + `<i class="fa fa-times"></i>`
+                + '</div>'
+                + '</div>'
+                + '</div>');
+            $('#formDapAnDung').append(input);
+            // Số thứ tự ID của input
+            arrIDDapAnDung.push(idDapAnDung + 1);
+            idDapAnDung += 1;
+        });
+
+        // ADD INPUT EDIT
+        $('#edit-dapan-input').on('click', function () {
+            input = jQuery(`<div style="margin-top:5px;" id="dap-an-${idDapAnEdit + 1}_Edit" class="input-group date yyyy">`
+                + `<textarea type = "text" class= "form-control" placeholder = "Nhập đáp án" id = "dapAn${idDapAnEdit + 1}_Edit"></textarea>`
+                + `<div onclick="RemoveInput_Edit(${idDapAnEdit + 1})" class="input-group-addon input-group-append">`
+                + '<div class="input-group-text">'
+                + `<i class="fa fa-times"></i>`
+                + '</div>'
+                + '</div>'
+                + '</div>');
+            $('#formDapAnEdit').append(input);
+            // Số thứ tự ID của input
+            arrIDDapAnEdit.push(idDapAnEdit + 1);
+            idDapAnEdit += 1;
+        });
+        // ADD INPUT DAP AN DUNG EDIT
+        $('#edit-dapan-dung-input').on('click', function () {
+            input = jQuery(`<div style="margin-top:5px;" id="dap-an-dung-${idDapAnDungEdit + 1}_Edit" class="input-group date yyyy">`
+                + `<textarea type ="text" class="form-control" placeholder="Nhập đáp án" id="dapAnDung${idDapAnDungEdit + 1}_Edit"></textarea>`
+                + `<div onclick="RemoveInput2_Edit(${idDapAnDungEdit + 1})" class="input-group-addon input-group-append">`
+                + '<div class="input-group-text">'
+                + `<i class="fa fa-times"></i>`
+                + '</div>'
+                + '</div>'
+                + '</div>');
+            $('#formDapAnDungEdit').append(input);
+            // Số thứ tự ID của input
+            arrIDDapAnDungEdit.push(idDapAnDungEdit + 1);
+            idDapAnDungEdit += 1;
+        });
+
+        $('#select-LoaiCauHoiAdd').change(function () {
+            var loai = $('#select-LoaiCauHoiAdd').val()
+            if (loai == 6) {
+                $('#btn-show').removeClass('show_input');
+            } if (loai == 5) {
+                $('#btn-show').addClass('show_input');
+            }
+
+            if (arrIDDapAn.length > 1) {
+                var number = arrIDDapAn.length;
+                for (var i = 1; i < number; i++) {
+                    $(`#dap-an-${arrIDDapAn[i]}`).remove();
+                }
+                arrIDDapAn.splice(1);
+            }
+            if (arrIDDapAnDung.length > 1) {
+                var number2 = arrIDDapAnDung.length
+                for (var i = 1; i < number2; i++) {
+                    $(`#dap-an-dung-${arrIDDapAnDung[i]}`).remove();
+                }
+                arrIDDapAnDung.splice(1);
+            }
+            console.log("acv" + arrIDDapAn);
+        })
+        $('#select-LoaiCauHoiEdit').change(function () {
+            var loai = $('#select-LoaiCauHoiEdit').val()
+            if (loai == 6) {
+                $('#btn-edit-show').removeClass('show_input');
+            } if (loai == 5) {
+                $('#btn-edit-show').addClass('show_input');
+            }
+        })
+        // ON CHANGE FILTER
+        $('#filter_loaicauhoi_tab1').change(function () {
+            var loaiID = $('#filter_loaicauhoi_tab1').val()
+            var mucDo = $('#filter_mucdo_tab1').val()
+            var hocPhanID = $('#filter_hocphan_tab1').val()
+            var filter = {
+                'HocPhanID': parseInt(hocPhanID),
+                'LoaiID': parseInt(loaiID),
+                'MucDo': parseInt(mucDo),
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/CauHoiApi/Filter',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(filter),
+                success: function (data) {
+                    if (data != null) {
+                        dataCauHoi = data;
+                        $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+        })
+        $('#filter_mucdo_tab1').change(function () {
+            var loaiID = $('#filter_loaicauhoi_tab1').val()
+            var mucDo = $('#filter_mucdo_tab1').val()
+            var hocPhanID = $('#filter_hocphan_tab1').val()
+            var filter = {
+                'HocPhanID': parseInt(hocPhanID),
+                'LoaiID': parseInt(loaiID),
+                'MucDo': parseInt(mucDo),
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/CauHoiApi/Filter',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(filter),
+                success: function (data) {
+                    if (data != null) {
+                        dataCauHoi = data;
+                        $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+        })
+        $('#filter_hocphan_tab1').change(function () {
+            var loaiID = $('#filter_loaicauhoi_tab1').val()
+            var mucDo = $('#filter_mucdo_tab1').val()
+            var hocPhanID = $('#filter_hocphan_tab1').val()
+            var filter = {
+                'HocPhanID': parseInt(hocPhanID),
+                'LoaiID': parseInt(loaiID),
+                'MucDo': parseInt(mucDo),
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/CauHoiApi/Filter',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(filter),
+                success: function (data) {
+                    if (data != null) {
+                        dataCauHoi = data;
+                        $('#dataGridCauHoi_tab1').DataTable().ajax.reload().draw();
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+        })
+        // MODAL HIDDEN
+        $("#modalCauHoiEdit").on('hide.bs.modal', function () {
+            if (arrIDDapAnEdit.length > 0) {
+                for (var i = 0; i < arrIDDapAnEdit.length; i++) {
+                    $(`#dap-an-${arrIDDapAnEdit[i]}_Edit`).remove();
+                }
+            }
+            if (arrIDDapAnDungEdit.length > 0) {
+                for (var i = 0; i < arrIDDapAnDungEdit.length; i++) {
+                    $(`#dap-an-dung-${arrIDDapAnDungEdit[i]}_Edit`).remove();
+                }
+            }
+            arrIDDapAnDungEdit = [];
+            arrIDDapAnEdit = [];
+        });
+        $("#modalCauHoiAdd").on('hide.bs.modal', function () {
+            if (arrIDDapAn.length > 1) {
+                var number = arrIDDapAn.length;
+                for (var i = 1; i < number; i++) {
+                    $(`#dap-an-${arrIDDapAn[i]}`).remove();
+                }
+                arrIDDapAn.splice(1);
+            }
+            if (arrIDDapAnDung.length > 1) {
+                var number2 = arrIDDapAnDung.length
+                for (var i = 1; i < number2; i++) {
+                    $(`#dap-an-dung-${arrIDDapAnDung[i]}`).remove();
+                }
+                arrIDDapAnDung.splice(1);
+            }
+            $(`#dapAn0`).val("");
+            $(`#dapAnDung0`).val("");
+            tinymce.get("cauHoiAdd").setContent("");
+            $('#select-HocPhanAdd').val("").trigger('change');
+            $('#select-LoaiCauHoiAdd').val("").trigger('change');
+            $('input:radio[name="mucDoAdd"]').val([1]);
+        });
+        $("#modalCauHoiDetail").on('hide.bs.modal', function () {
+            for (var i = 0; i < arrDapAn.length; i++) {
+                $(`#${i}`).remove();
+            }
+        });
+        
+    });
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+
+    // ADD DATA DAP AN
+    function DapAnAdd(id) {
+        for (var i = 0; i < arrIDDapAn.length; i++) {
+            var cauTraLoi = $(`#dapAn${arrIDDapAn[i]}`).val();
+            var dataDapAn = {
+                'CauHoiID': id,
+                'CauTraLoi': cauTraLoi,
+                'DapAnDung': 0,
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DapAnApi/Add',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataDapAn),
+                success: function (data) {
+
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+        for (var i = 0; i < arrIDDapAnDung.length; i++) {
+            var cauTraLoiDung = $(`#dapAnDung${arrIDDapAnDung[i]}`).val();
+            var dataDapAnDung = {
+                'CauHoiID': id,
+                'CauTraLoi': cauTraLoiDung,
+                'DapAnDung': 1,
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DapAnApi/Add',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataDapAnDung),
+                success: function (data) {
+
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+
+    }
+    function DapAnEdit(id) {
+        for (var i = 0; i < arrIDDapAnEdit.length; i++) {
+            var cauTraLoi = $(`#dapAn${arrIDDapAnEdit[i]}_Edit`).val();
+            var dataDapAn = {
+                'CauHoiID': id,
+                'CauTraLoi': cauTraLoi,
+                'DapAnDung': 0,
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DapAnApi/Add',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataDapAn),
+                success: function (data) {
+
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+        for (var i = 0; i < arrIDDapAnDungEdit.length; i++) {
+            var cauTraLoiDung = $(`#dapAnDung${arrIDDapAnDungEdit[i]}_Edit`).val();
+            var dataDapAnDung = {
+                'CauHoiID': id,
+                'CauTraLoi': cauTraLoiDung,
+                'DapAnDung': 1,
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DapAnApi/Add',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataDapAnDung),
+                success: function (data) {
+
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+
+    }
+    function DapAnDeletes(id) {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DapAnApi/Delete?id=' + id,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null) {
+                    DapAnEdit(id);
+                }
+            },
+            error: function (err) {
+                alert('Lỗi ! Thêm đáp án thất bại');
+            }
+        });
+    }
+    function DapAnGetsByID(id) {
+        var temp = [];
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DapAnApi/GetsByID?id=' + id,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null) {
+                    temp = data;
+                }
+            },
+            error: function (err) {
+                alert('Lỗi ! Thêm đáp án thất bại');
+            }
+        });
+        return temp;
+    }
+    // Check CauHoi Excel
+    function CheckCauHoi(data) {
+        var checkSV = [];
+        for (var i = 4; i < data.length; i++) {
+            var maCauHoi = data[i][1];
+            var hoTen = data[i][2];
+            var diaChi = data[i][3];
+            var ngaySinh = data[i][4];
+            var gioiTinh = data[i][5];
+            // số thứ tự
+            var stt = i - 3;
+            if (checkEmptyBlank(maCauHoi) || checkEmptyBlank(hoTen) || checkEmptyBlank(gioiTinh) || checkEmptyBlank(ngaySinh) || checkEmptyBlank(diaChi)) {
+                checkSV.push(stt);
+            } else {
+                var check = false;
+                var dataCheck = {
+                    "CauHoiID": 0,
+                    "MaCauHoi": maCauHoi.trim(),
+                }
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/CauHoiApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (check) {
+                    checkSV.push(stt);
+                }
+            }
+        }
+        return checkSV;
+    }
+    // LOAD SELECT2
+    function LoadLoaiCauHoi() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/LoaiCauHoiApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            data: dataForm = {
+                "TuKhoa": null
+            },
+            success: function (data) {
+                if (data != 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        $(`#select-LoaiCauHoiAdd`).append(`<option value=${data[i].LoaiID}>${data[i].TenLoai}</option>`);
+                        $(`#select-LoaiCauHoiEdit`).append(`<option value=${data[i].LoaiID}>${data[i].TenLoai}</option>`);
+                        $(`#filter_loaicauhoi_tab1`).append(`<option value=${data[i].LoaiID}>${data[i].TenLoai}</option>`);
+
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadHocPhan() {
+        var dataFrom = {
+            "TuKhoa": null,
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/HocPhanApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(dataFrom),
+            success: function (data) {
+                if (data != 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        $(`#select-HocPhanAdd`).append(`<option value=${data[i].HocPhanID}>${data[i].TenHocPhan}</option>`);
+                        $(`#select-HocPhanEdit`).append(`<option value=${data[i].HocPhanID}>${data[i].TenHocPhan}</option>`);
+                        $(`#filter_hocphan_tab1`).append(`<option value=${data[i].HocPhanID}>${data[i].TenHocPhan}</option>`);
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    // LOAD DATA
+    function LoadDapAn_Sai(id) {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DapAnApi/GetByID_Sai?id=' + id,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    for (var i = 0; i < data.length; i++) {
+                        input = jQuery(`<div style="margin-top:5px;" id="dap-an-${i}_Edit" class="input-group date yyyy">`
+                            + `<textarea type = "text" class= "form-control" placeholder = "Nhập đáp án" id = "dapAn${i}_Edit">${data[i].CauTraLoi}</textarea>`
+                            + `<div onclick="RemoveInput_Edit(${i})" class="input-group-addon input-group-append">`
+                            + '<div class="input-group-text">'
+                            + `<i class="fa fa-times"></i>`
+                            + '</div>'
+                            + '</div>'
+                            + '</div>');
+                        $('#formDapAnEdit').append(input);
+                        // Số thứ tự ID của input
+                        arrIDDapAnEdit.push(i);
+                        idDapAnEdit = i;
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadDapAn_Dung(id) {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DapAnApi/GetByID_Dung?id=' + id,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    for (var i = 0; i < data.length; i++) {
+                        input = jQuery(`<div style="margin-top:5px;" id="dap-an-dung-${i}_Edit" class="input-group date yyyy">`
+                            + `<textarea type = "text" class= "form-control" placeholder = "Nhập đáp án" id = "dapAnDung${i}_Edit">${data[i].CauTraLoi}</textarea>`
+                            + `<div onclick="RemoveInput2_Edit(${i})" class="input-group-addon input-group-append">`
+                            + '<div class="input-group-text">'
+                            + `<i class="fa fa-times"></i>`
+                            + '</div>'
+                            + '</div>'
+                            + '</div>');
+                        $('#formDapAnDungEdit').append(input);
+                        // Số thứ tự ID của input
+                        arrIDDapAnDungEdit.push(i);
+                        idDapAnDungEdit = i;
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadCauHoi() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/CauHoiApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != "" && data != null) {
+                    dataCauHoi = data;
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    // REMOVIE INPUT
+    function RemoveInput(id) {
+        $(`#dap-an-${id}`).remove();
+        var index = arrIDDapAn.indexOf(id);
+        if (index > -1) {
+            arrIDDapAn.splice(index, 1);
+        }
+    }
+    function RemoveInput2(id) {
+        $(`#dap-an-dung-${id}`).remove();
+        var index = arrIDDapAnDung.indexOf(id);
+        if (index > -1) {
+            arrIDDapAnDung.splice(index, 1);
+        }
+    }
+    function RemoveInput_Edit(id) {
+        $(`#dap-an-${id}_Edit`).remove();
+        var index = arrIDDapAnEdit.indexOf(id);
+        if (index > -1) {
+            arrIDDapAnEdit.splice(index, 1);
+        }
+    }
+    function RemoveInput2_Edit(id) {
+        $(`#dap-an-dung-${id}_Edit`).remove();
+        var index = arrIDDapAnDungEdit.indexOf(id);
+        if (index > -1) {
+            arrIDDapAnDungEdit.splice(index, 1);
+        }
+    }
+
+</script>
+
+

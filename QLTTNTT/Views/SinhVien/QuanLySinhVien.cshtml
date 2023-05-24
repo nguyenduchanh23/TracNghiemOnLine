@@ -1,0 +1,988 @@
+﻿
+@{
+
+}
+<style>
+    .paginate_button {
+        margin: 10px;
+        font-weight: 900;
+        color: black;
+    }
+
+        .paginate_button.current {
+            color: red !important;
+        }
+
+    .noclick {
+        pointer-events: none;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<div class="box-header">
+    <h3>Quản lý sinh viên</h3>
+</div>
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active">
+        <div>
+            <div class="card mb-4">
+                <div class="card-header py-3 text-right">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modalSinhVienAdd">Thêm mới</button>
+                    <button class="btn btn-danger" id="show-deletes">Xóa</button>
+                    <label for="data" class="btn btn-success" style="margin-top: 8px">
+                        Import Excel
+                    </label>
+                    <input type="file" id="data" accept=".xlsx" style="display: none" />
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="dataGridSinhVien" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="mt-head"></th>
+                                    <th class="text-center mt-head">STT</th>
+                                    <th class="text-center">Họ tên</th>
+                                    <th class="text-center">Mã sinh viên</th>
+                                    <th class="text-center mt-head">Hoạt động</th>
+                                    <th class="text-center mt-head">Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal chỉnh sửa  -->
+<div class="modal fade" id="modalSinhVienEdit" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelEdit">Cập nhật sinh viên</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formEdit">
+                    <input type="hidden" class="form-control" id="sinhVienIDEdit">
+                    <input type="hidden" class="form-control" id="hinhAnh">
+                    <div class="form-group row">
+                        <label for="hinhAnhEdit" class="editor-label col-md-6">Hình ảnh<span class="text-danger"> *</span></label>
+                        <div class="col-md-6">
+                            <div class="avatar-preview">
+                                <img id="hinhAnhEdit" src="" width="150px" height="220px" />
+                            </div><br />
+                        </div>
+                        <div class="avatar-edit">
+                            <input type='file' id="hinhAnhUploadEdit" onchange="readURLEdit(this)" accept=".png, .jpg, .jpeg" />
+                            <label for="hinhAnhUploadEdit"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="hoTenEdit" class="editor-label">Họ tên<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="hoTenEdit">
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 form-group">
+                            <label for="maSinhVienEdit" class="editor-label">Mã sinh viên<span class="text-danger"> *</span></label>
+                            <input class="form-control check-mdv" id="maSinhVienEdit">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="editor-label">Hoạt động<span class="text-danger"> *</span></label>
+                            <div class="form-control check-mdv">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="trangThaiEdit" id="trang-thai-khoa" value="0" checked>
+                                    <label class="form-check-label" for="trang-thai-khoa">Khóa</label>
+                                </div>
+                                <label></label>
+                                <label></label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="trangThaiEdit" id="trang-thai-mo" value="1">
+                                    <label class="form-check-label" for="trang-thai-mo">Mở</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 form-group">
+                            <label for="ngaySinhEdit" class="editor-label">Ngày sinh<span class="text-danger"> *</span></label>
+                            <input class="form-control check-mdv" id="ngaySinhEdit">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="editor-label">Giới tính<span class="text-danger"> *</span></label>
+                            <div class="form-control check-mdv">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gioiTinhEdit" id="gioi-tinh-nu" value="0" checked>
+                                    <label class="form-check-label" for="gioi-tinh-nu">Nữ</label>
+                                </div>
+                                <label></label>
+                                <label></label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gioiTinhEdit" id="gioi-tinh-nam" value="1">
+                                    <label class="form-check-label" for="gioi-tinh-nam">Nam</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="diaChiEdit" class="editor-label">Địa chỉ</label>
+                        <input class="form-control check-mdv" id="diaChiEdit">
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button type="button" id="edit" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm mới  -->
+<div class="modal fade" id="modalSinhVienAdd" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelAdd">Thêm mới sinh viên</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <div class="form-group row">
+                        <label for="hinhAnhAdd" class="editor-label col-md-6">Hình ảnh<span class="text-danger"> *</span></label>
+                        <div col-md-6>
+                            <div class="avatar-preview">
+                                <img id="hinhAnhAdd" src="" width="200px" height="220px" />
+                            </div><br />
+                        </div>
+                        <div class="avatar-edit">
+                            <input type='file' id="hinhAnhUploadAdd" onchange="readURLAdd(this)" accept=".png, .jpg, .jpeg" />
+                            <label for="hinhAnhUploadAdd"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="hoTenAdd" class="editor-label">Họ tên<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="hoTenAdd">
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 form-group">
+                            <label for="maSinhVienAdd" class="editor-label">Mã sinh viên<span class="text-danger"> *</span></label>
+                            <input class="form-control check-mdv" id="maSinhVienAdd">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="editor-label">Hoạt động<span class="text-danger"> *</span></label>
+                            <div class="form-control check-mdv">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="trangThaiAdd" id="trang-thai-khoa" value="0" checked>
+                                    <label class="form-check-label" for="trang-thai-khoa">Khóa</label>
+                                </div>
+                                <label></label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="trangThaiAdd" id="trang-thai-mo" value="1">
+                                    <label class="form-check-label" for="trang-thai-mo">Mở</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 form-group">
+                            <label for="ngaySinhAdd" class="editor-label">Ngày sinh<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control check-mdv date dd-mm-yyyy" id="ngaySinhAdd">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="editor-label">Giới tính<span class="text-danger"> *</span></label>
+                            <div class="form-control check-mdv">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gioiTinhAdd" id="gioi-tinh-nu" value="0" checked>
+                                    <label class="form-check-label" for="gioi-tinh-nu">Nữ</label>
+                                </div>
+                                <label></label>
+                                <label></label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gioiTinhAdd" id="gioi-tinh-nam" value="1">
+                                    <label class="form-check-label" for="gioi-tinh-nam">Nam</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="diaChiAdd" class="editor-label">Địa chỉ</label>
+                        <input class="form-control check-mdv" id="diaChiAdd">
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="add" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa  -->
+<div class="modal fade" id="modalSinhVienDelete" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa sinh viên</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="sinhVienIDDelete" class="form-control" hidden />
+                    <label>Xác nhận xóa sinh viên này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="delete" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalSinhVienDeletes" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa sinh viên</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="hidden" class="form-control" id="listSinhVienID" />
+                    <label>Xác nhận xóa các sinh viên này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="deletes" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận thêm mới  -->
+<div class="modal fade" id="modalSinhVienAdd_Excel" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Thêm sinh viên</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="sinhVienIDDelete" class="form-control" hidden />
+                    <label>Xác nhận thêm sinh viên từ execl ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="add-excel" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataSinhVien = {}
+    //F: \LapTrinh\ASP.Net\KhoaLuanTotNghiep\QLTTNTT
+    const pathFolder = "~/FileUpload/SinhVien"
+    const pathThuMuc = "FileUpload/SinhVien"
+    $(document).ready(function () {
+        function fileReader(oEvent) {
+            var oFile = oEvent.target.files[0];
+            var sFilename = oFile.name;
+
+            var reader = new FileReader();
+            var result = {};
+            reader.onload = function (e) {
+                var data = e.target.result;
+                data = new Uint8Array(data);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var result = {};
+                workbook.SheetNames.forEach(function (sheetName) {
+                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+                    if (roa.length) result[sheetName] = roa;
+                });
+                // see the result, caution: it works after reader event is done.
+
+                console.log(result);
+                SinhVienAdd(result);
+            };
+
+            reader.readAsArrayBuffer(oFile);
+        };
+
+        // ddMMyyyy
+        $('.dd-mm-yyyy').datetimepicker({
+            "locale": 'vi',
+            "format": "DD/MM/YYYY",
+        });
+        // datatable
+        $('#dataGridSinhVien').dataTable({
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/SinhVienApi/Gets',
+                type: "post",
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                        }
+                    }
+                    return data;
+                }
+            },
+
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+                {
+                    targets: 4,
+                    render: function (data, type, row, meta) {
+                        if (data == 1) {
+                            return '<input type="checkbox" class="noclick" checked>'
+                        } else {
+                            return '<input type="checkbox" disabled>'
+                        }
+
+                    }
+                },
+                {
+                    targets: 5,
+                    render: function (data, type, row, meta) {
+                        return '<span style="font-size: 25px; margin-right: 15px" data-toggle="tooltip" title="Chỉnh sửa" class="fas fa-pencil-alt  text-primary edit-btn" id=n-"' + meta.row + '">  </span><span style="font-size: 25px" data-toggle="tooltip" title="Xóa" class="fa fa-trash delete-btn text-danger" id=n-"' + meta.row + '"></span>';
+                    }
+                },
+                {
+                    targets: [2, 3],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            deferRender: true,
+            "columns": [
+                { data: "SinhVienID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "HoTen", "width": "400px", "class": "left-align" },
+                { data: "MaSinhVien", "width": "200px", "class": "text-align" },
+                { data: "TrangThai", "width": "150px", "class": "text-center" },
+                { data: "", "width": "100px", "class": "text-center" },
+            ]
+        });
+        $('#dataGridSinhVien tbody').on('click', '.edit-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridSinhVien').DataTable().row(id).data();
+            $('#sinhVienIDEdit').val(data.SinhVienID);
+            $('#hoTenEdit').val(data.HoTen);
+            $('#hinhAnhEdit').attr('src', `/${data.HinhAnh}`);
+            $('#hinhAnh').val(data.HinhAnh);
+            $('input:radio[name="trangThaiEdit"]').val([data.TrangThai]);
+            $('input:radio[name="gioiTinhEdit"]').val([data.GioiTinh]);
+            $('#maSinhVienEdit').val(data.MaSinhVien != null ? data.MaSinhVien : "");
+            var nam, thang, ngay;
+            var ns = "";
+            if (data.NgaySinh != null) {
+                nam = data.NgaySinh.slice(0, 4);
+                thang = data.NgaySinh.slice(5, 7);
+                ngay = data.NgaySinh.slice(8, 10);
+                ns = `${ngay}/${thang}/${nam}`;
+            }
+            $('#ngaySinhEdit').val(ns);
+            $('#diaChiEdit').val(data.DiaChi != null ? data.DiaChi : "");
+            $('#modalSinhVienEdit').modal('show');
+        });
+        $('#dataGridSinhVien tbody').on('click', '.delete-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridSinhVien').DataTable().row(id).data();
+            $('#sinhVienIDDelete').val(data.SinhVienID);
+            $('#modalSinhVienDelete').modal('show');
+        });
+        $('#add').on('click', function () {
+            var fileHinhAnh = $('#hinhAnhUploadAdd').val();
+            var hoTen = $('#hoTenAdd').val();
+            var maSinhVien = $('#maSinhVienAdd').val();
+            var diaChi = $('#diaChiAdd').val();
+            var gioiTinh = $('input[type="radio"][name="gioiTinhAdd"]:checked').val();
+            var trangThai = $('input[type="radio"][name="trangThaiAdd"]:checked').val();
+            var ngaySinh = $('#ngaySinhAdd').val();
+            if (checkEmptyBlank(ngaySinh) || checkEmptyBlank(fileHinhAnh) || checkEmptyBlank(hoTen) || checkEmptyBlank(maSinhVien) || checkEmptyBlank(gioiTinh) || checkEmptyBlank(trangThai)) {
+                alert('Thông tin bắt buộc không được trống');
+            } else {
+                var nam, thang, ngay, ns = null;
+                if (!checkEmptyBlank(ngaySinh)) {
+                    nam = ngaySinh.slice(6, 10);
+                    thang = ngaySinh.slice(3, 5);
+                    ngay = ngaySinh.slice(0, 2);
+                    ns = `${nam}/${thang}/${ngay}`;
+                }
+                if (checkEmptyBlank(diaChi)) {
+                    diaChi = "";
+                } else {
+                    diaChi = diaChi.trim();
+                }
+                // UPLOAD HinhAnh
+                var file = document.getElementById("hinhAnhUploadAdd").files[0];
+                var formData_file = new FormData();
+                let filename = `${formatDate(new Date().toString())}_${file.name}`;
+                formData_file.append(filename, file, filename);
+                var hinhAnh = Upload(formData_file);
+                // ADD SinhVien
+                var dataCheck = {
+                    "SinhVienID": 0,
+                    "MaSinhVien": maSinhVien,
+                }
+                var dataAdd = {
+                    "HinhAnh": hinhAnh,
+                    "HoTen": hoTen.trim(),
+                    "MaSinhVien": maSinhVien.trim(),
+                    "DiaChi": diaChi,
+                    "GioiTinh": parseInt(gioiTinh),
+                    "TrangThai": parseInt(trangThai),
+                    "NgaySinh": ns
+                }
+                var check = false;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/SinhVienApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (!check) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/SinhVienApi/Add',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataAdd),
+                        success: function (data) {
+                            if (data != null) {
+                                AddTaiKhoan(data.MaSinhVien);
+                                alert("Thêm sinh viên thành công");
+                                $("#modalSinhVienAdd").modal('hide');
+                                $('#dataGridSinhVien').DataTable().ajax.reload().draw();
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Thêm sinh viên thất bại');
+                        }
+                    });
+                } else {
+                    alert('Mã sinh viên đã tồn tại');
+                }
+            }
+        });
+        $('#edit').on('click', function () {
+            var fileHinhAnh = $('#hinhAnhUploadEdit').val();
+            var hoTen = $('#hoTenEdit').val();
+            var sinhVienID = $('#sinhVienIDEdit').val();
+            var maSinhVien = $('#maSinhVienEdit').val();
+            var diaChi = $('#diaChiEdit').val();
+            var gioiTinh = $('input[type="radio"][name="gioiTinhEdit"]:checked').val();
+            var trangThai = $('input[type="radio"][name="trangThaiEdit"]:checked').val();
+            var ngaySinh = $('#ngaySinhEdit').val();
+            var hinhAnh = $('#hinhAnh').val();
+            if (checkEmptyBlank(ngaySinh) || checkEmptyBlank(hoTen) || checkEmptyBlank(maSinhVien) || checkEmptyBlank(gioiTinh) || checkEmptyBlank(trangThai)) {
+                alert('Thông tin bắt buộc không được trống');
+            } else {
+                var nam, thang, ngay, ns = "";
+                if (!checkEmptyBlank(ngaySinh)) {
+                    nam = ngaySinh.slice(6, 10);
+                    thang = ngaySinh.slice(3, 5);
+                    ngay = ngaySinh.slice(0, 2);
+                    ns = `${nam}/${thang}/${ngay}`;
+                }
+                if (checkEmptyBlank(diaChi)) {
+                    diaChi = "";
+                } else {
+                    diaChi = diaChi.trim();
+                }
+                // UPLOAD HinhAnh
+
+                if (!checkEmptyBlank(fileHinhAnh)) {
+                    var file = document.getElementById("hinhAnhUploadEdit").files[0];
+                    var formData_file = new FormData();
+                    let filename = `${formatDate(new Date().toString())}_${file.name}`;
+                    formData_file.append(filename, file, filename);
+                    hinhAnh = UploadEdit(formData_file);
+                }
+
+                // ADD SinhVien
+                var dataCheck = {
+                    "SinhVienID": sinhVienID,
+                    "MaSinhVien": maSinhVien,
+                }
+                var dataEdit = {
+                    "SinhVienID": sinhVienID,
+                    "HinhAnh": hinhAnh,
+                    "HoTen": hoTen.trim(),
+                    "MaSinhVien": maSinhVien.trim(),
+                    "DiaChi": diaChi,
+                    "GioiTinh": parseInt(gioiTinh),
+                    "TrangThai": parseInt(trangThai),
+                    "NgaySinh": ns
+                }
+                var check = false;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/SinhVienApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (!check) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/SinhVienApi/Edit',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataEdit),
+                        success: function (data) {
+                            alert("Cập nhật sinh viên thành công");
+                            $("#modalSinhVienEdit").modal('hide');
+                            $('#dataGridSinhVien').DataTable().ajax.reload().draw();
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Cập nhật sinh viên thất bại');
+                        }
+                    });
+                } else {
+                    alert('Mã sinh viên đã tồn tại');
+                }
+            }
+        });
+        $('#delete').on('click', function () {
+            var sinhVienID = $('#sinhVienIDDelete').val();
+            if (!checkEmptyBlank(sinhVienID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/SinhVienApi/Delete?id=' + sinhVienID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalSinhVienDelete').modal('hide');
+                        $('#dataGridSinhVien').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa sinh viên thất bại');
+                    }
+                });
+            }
+        });
+        $('#show-deletes').on('click', function () {
+            var oTable = $('#dataGridSinhVien').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn sinh viên cần xóa");
+            } else {
+                $('#listSinhVienID').val(list);
+                $('#modalSinhVienDeletes').modal('show');
+            }
+
+        });
+        $('#deletes').on('click', function () {
+            var listID = $('#listSinhVienID').val();
+            if (!checkEmptyBlank(listID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/SinhVienApi/Deletes?listID=' + listID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalSinhVienDeletes').modal('hide');
+                        $('#dataGridSinhVien').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa sinh viên thất bại');
+                    }
+                });
+            }
+        });
+        // import excel
+        $('#data').change(function (ev) {
+            // Do something
+            fileReader(ev);
+        });
+
+        modalSinhVienDelete
+        $("#modalSinhVienAdd").on('hide.bs.modal', function () {
+
+
+            resetForm();
+        });
+    });
+    function AddTaiKhoan(user) {
+        var username = user;
+        var pass = generate_String();
+        var dataTaiKhoan = {
+            "Username": username,
+            "Password": pass,
+            "Quyen": 'SinhVien',
+            "Password_Random": pass,
+            "TrangThai": parseInt(1)
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/TaiKhoanApi/Add',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(dataTaiKhoan),
+            success: function (data) {
+            },
+            error: function (err) {
+            }
+        });
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    // RESET FORM
+    function resetForm() {
+        $('#hinhAnhAdd').attr('src', '');
+        $('input').val('');
+        $('textarea').val('');
+        $('input:radio[name="trangThaiAdd"]').val(['0']);
+        $('input:radio[name="gioiTinhAdd"]').val(['0']);
+    }
+
+    //format ddMMyyyyHHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${day}${month}${year}${hour}${minute}${second}`
+    }
+
+    // Upload Add
+    function Upload(file) {
+        var files = $('#hinhAnhUploadAdd').get(0).files;
+        // Allowing file type
+        var filePath = $('#hinhAnhUploadAdd').val();
+        // files = `${formatDate(new Date())}_${files}`;
+        if (filePath) {
+            var allowedExtensions =
+                /(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.webp)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Loại tệp ảnh không hợp lệ!');
+                $('#hinhAnhUploadAdd').val("");
+                return false;
+            }
+            else {
+                var size = Object.keys(files).length;
+                var fileName = "";
+                $.ajax({
+                    async: false,
+                    url: APIURL + '/api/FileUploadApi/UploadFiles?pathFolder=' + pathFolder + "&pathThuMuc=" + pathThuMuc,
+                    method: "POST",
+                    data: file,
+                    processData: false,
+                    contentType: false,
+                    success: function (dataFile) {
+                        for (let i = 0; i < size; i++) {
+                            if (i == 0) {
+                                fileName = dataFile.ResultObj[i].ViTri;
+                            }
+                            else {
+                                fileName += "," + dataFile.ResultObj[i].ViTri;
+                            }
+                            return;
+                        }
+                    },
+                    error: function (err) {
+                        alert("Upload Failed!");
+                    }
+                });
+                return fileName;
+            }
+        }
+    }
+    // Upload Edit
+    function UploadEdit(file) {
+        var files = $('#hinhAnhUploadEdit').get(0).files;
+        // Allowing file type
+        var filePath = $('#hinhAnhUploadEdit').val();
+        // files = `${formatDate(new Date())}_${files}`;
+        if (filePath) {
+            var allowedExtensions =
+                /(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.webp)$/i;
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Loại tệp ảnh không hợp lệ!');
+                $('#hinhAnhUploadEdit').val("");
+                return false;
+            }
+            else {
+                var size = Object.keys(files).length;
+                var fileName = "";
+                $.ajax({
+                    async: false,
+                    url: APIURL + '/api/FileUploadApi/UploadFiles?pathFolder=' + pathFolder + "&pathThuMuc=" + pathThuMuc,
+                    method: "POST",
+                    data: file,
+                    processData: false,
+                    contentType: false,
+                    success: function (dataFile) {
+                        for (let i = 0; i < size; i++) {
+                            if (i == 0) {
+                                fileName = dataFile.ResultObj[i].ViTri;
+                            }
+                            else {
+                                fileName += "," + dataFile.ResultObj[i].ViTri;
+                            }
+                            return;
+                        }
+                    },
+                    error: function (err) {
+                        alert("Upload Failed!");
+                    }
+                });
+                return fileName;
+            }
+        }
+    }
+    // Preview image
+    function readURLAdd(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#hinhAnhAdd')
+                    .attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function readURLEdit(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#hinhAnhEdit')
+                    .attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    //random pass
+    function randString() {
+        return btoa(+new Date).slice(-12, -2);
+    }
+    // Add Excel
+    function SinhVienAdd(data) {
+        var checkSV = CheckSinhVien(data.Sheet1);
+        if (checkSV.length > 0) {
+            //console.log(checkSV);
+            alert("Những sinh viên này bị trùng mã sinh viên hoặc thiếu thông tin \n STT: " + checkSV);
+            location.reload();
+        } else {
+            for (var i = 4; i < data.Sheet1.length; i++) {
+                var hinhAnh = "FileUpload/SinhVien/17042023203948_profile.png";
+                var maSinhVien = data.Sheet1[i][1];
+                var hoTen = data.Sheet1[i][2];
+                var diaChi = data.Sheet1[i][3];
+                var ngaySinh = data.Sheet1[i][4];
+                var gioiTinh = data.Sheet1[i][5];
+                var nam, thang, ngay, ns = "";
+                if (!checkEmptyBlank(ngaySinh)) {
+                    nam = ngaySinh.slice(6, 10);
+                    thang = ngaySinh.slice(3, 5);
+                    ngay = ngaySinh.slice(0, 2);
+                    ns = `${nam}/${thang}/${ngay}`;
+                }
+                if (checkEmptyBlank(diaChi)) {
+                    diaChi = "";
+                } else {
+                    diaChi = diaChi.trim();
+                }
+                if (gioiTinh.localeCompare("Nam") == 0) {
+                    gioiTinh = 1;
+                } else {
+                    gioiTinh = 0;
+                }
+                // ADD SinhVien
+                var dataAdd = {
+                    "HinhAnh": hinhAnh,
+                    "HoTen": hoTen.trim(),
+                    "MaSinhVien": maSinhVien.trim(),
+                    "DiaChi": diaChi.trim(),
+                    "GioiTinh": parseInt(gioiTinh),
+                    "TrangThai": parseInt(1),
+                    "NgaySinh": ns
+                }
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/SinhVienApi/Add',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataAdd),
+                    success: function (data) {
+                        if (data != null) {
+                            AddTaiKhoan(data.MaSinhVien);
+                        }
+                    },
+                    error: function (err) {
+                        //alert('Lỗi ! Thêm sinh viên thất bại');
+                    }
+                });
+            }
+            alert("Thêm sinh viên thành công");
+            $('#dataGridSinhVien').DataTable().ajax.reload().draw();
+            location.reload();
+        }
+
+    }
+    // Check SinhVien Excel
+    function CheckSinhVien(data) {
+        var checkSV = [];
+        var arrMSV = [];
+        for (var i = 4; i < data.length; i++) {
+            arrMSV.push(data[i][1]);
+        }
+        for (var i = 0; i < arrMSV.length - 1; i++) {
+            for (var j = i + 1; j < arrMSV.length; j++) {
+                if (arrMSV[i] == arrMSV[j]) {
+                    checkSV.push(i + 1);
+                    break;
+                }
+            }
+        }
+        //if (checkSV.length > 0) {
+        //    alert("STT: " + checkSV + " trùng mã sinh viên");
+        //}
+        for (var i = 4; i < data.length; i++) {
+            var maSinhVien = data[i][1];
+            var hoTen = data[i][2];
+            var diaChi = data[i][3];
+            var ngaySinh = data[i][4];
+            var gioiTinh = data[i][5];
+            // số thứ tự
+            var stt = i - 3;
+            if (checkEmptyBlank(maSinhVien) || checkEmptyBlank(hoTen) || checkEmptyBlank(gioiTinh) || checkEmptyBlank(ngaySinh) || checkEmptyBlank(diaChi)) {
+                checkSV.push(stt);
+            } else {
+                var check = false;
+                var dataCheck = {
+                    "SinhVienID": 0,
+                    "MaSinhVien": maSinhVien.trim(),
+                }
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/SinhVienApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        console.log("check" + data);
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (check) {
+                    checkSV.push(stt);
+                }
+            }
+        }
+        return checkSV;
+    }
+    // random mật khẩu
+    function generate_String(n = 8) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < n; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
+</script>
+
+

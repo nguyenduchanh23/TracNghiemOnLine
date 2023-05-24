@@ -1,0 +1,491 @@
+﻿
+@{
+    ViewBag.Title = "Thêm mới phòng thi";
+}
+<style>
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
+<script src="~/Themes/bower_components/bootstrap-datepicker/dist/js/bootstrap-datetimepicker.min.js"></script>
+@*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">*@
+<link href="~/Themes/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active card mb-4">
+        <div class="card-body">
+            <div class="form-row" id="form-CauHoi">
+                <div class="form-group col-md-12">
+                    <label>Nội dung<span class="text-danger"> *</span></label>
+                    <textarea id="noiDung" type="text" class="form-control" placeholder="Nhập"></textarea>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Học phần<span class="text-danger"> *</span></label>
+                    <select id="select-HocPhan" class="form-control" style="width:100%">
+                        <option></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label style="padding-bottom: 10px" class="d-block">Trạng thái<span class="text-danger"> *</span></label>
+                    <div class="form-check d-inline-block mr-30">
+                        <input value="0" class="form-check-input" type="radio" name="trang-thai" checked>
+                        <label style="margin-left:5px" class="form-check-label">Đóng</label>
+                    </div>
+                    <div style="margin-left:20px" class="form-check d-inline-block">
+                        <input value="1" class="form-check-input" type="radio" name="trang-thai">
+                        <label style="margin-left:1px" class="form-check-label">Mở</label>
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Mã vào thi<span class="text-danger"> *</span></label>
+                    <input readonly type="text" class="form-control" placeholder="Được tạo tự động" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Ngày thi<span class="text-danger"> *</span></label>
+                    <div class="form-group">
+                        <div class="input-group date yyyy">
+                            <input type="text" class="form-control dd-mm-yyyy" placeholder="Chọn" id="ngayThi">
+                            <div class="input-group-addon input-group-append">
+                                <div class="input-group-text text-primary">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Thời gian thi<span class="text-danger"> *</span></label>
+                    <div class="form-group">
+                        <div class="input-group date yyyy">
+                            <input type="text" class="form-control timepicker" placeholder="Chọn" id="thoiGianThi">
+                            <div class="input-group-addon input-group-append">
+                                <div class="input-group-text text-primary">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6 form-radio-button">
+                    <label>Thời lượng làm bài (phút)<span class="text-danger"> *</span></label>
+                    <input type="text" id="thoiLuongLamBai" class="form-control check-num" placeholder="Nhập" />
+                </div>
+                <div class="form-group col-md-12" style="width: 100%;">
+                    <label>Sinh viên<span class="text-danger"> *</span></label>
+                    <select id="select-SinhVien" multiple>
+                        <option></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Mức độ</label>
+                    <input type="text" class="form-control check-num" placeholder="Số lượng câu hỏi" disabled />
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Dễ<span class="text-danger"> *</span></label>
+                    <input type="text" id="mucDoDe" class="form-control check-num" placeholder="Nhập" />
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Trung bình<span class="text-danger"> *</span></label>
+                    <input type="text" id="mucDoTrungBinh" class="form-control check-num" placeholder="Nhập" />
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Khó<span class="text-danger"> *</span></label>
+                    <input type="text" id="mucDoKho" class="form-control check-num" placeholder="Nhập" />
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <button type="button" id="btn-random-dapan" class="btn btn-primary">Tạo câu hỏi</button>
+                </div>
+            </div>
+
+            <div class="group-button-action text-right mt-30">
+                <button type="button" id="btn-add-dethi" class="btn btn-success">Lưu</button>
+                <button type="button" id="btn-huy" style="margin-right: 5px;" class="btn btn-light">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>
+<script type="text/javascript">
+    const APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var arrCauHoiDeThi = [];
+    var arrIDCauHoi = [];
+    $(function () {
+        $('.dd-mm-yyyy').datetimepicker({
+            "locale": 'vi',
+            "format": "DD/MM/YYYY",
+        });
+        $('.datepicker').datepicker({
+            "format": "dd/mm/yyyy",
+            icons: {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up: "fa fa-chevron-up",
+                down: "fa fa-chevron-down",
+                previous: 'fa fa-chevron-left',
+                next: 'fa fa-chevron-right',
+                today: 'fa fa-screenshot',
+                clear: 'fa fa-trash',
+                close: 'fa fa-remove'
+            }
+        });
+        $('.timepicker').datetimepicker({
+            format: 'HH:mm A'
+
+        });
+    });
+
+    // CHECK NUMBER (input type="text")
+    (function ($) {
+        $.fn.inputFilter = function (callback, errMsg) {
+            return this.on("input keydown keyup mousedown mouseup select contextmenu drop focusout", function (e) {
+                if (callback(this.value)) {
+                    // Accepted value
+                    if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+                        $(this).removeClass("input-error");
+                        this.setCustomValidity("");
+                    }
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    // Rejected value - restore the previous one
+                    $(this).addClass("input-error");
+                    this.setCustomValidity(errMsg);
+                    this.reportValidity();
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                } else {
+                    // Rejected value - nothing to restore
+                    this.value = "";
+                }
+            });
+        };
+    }(jQuery));
+
+    $('.check-num').inputFilter(function (value) {
+        return /^\d*$/.test(value);
+    }, "Dữ liệu nhập vào phải là số.");
+
+    $(document).ready(function () {
+        LoadHocPhan();
+        LoadSinhVien();
+        //SELECT2
+        $(`#select-HocPhan`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn học phần",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#select-SinhVien`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn sinh viên",
+            width: "100%",
+            allowClear: true
+        });
+        $(`#btn-random-dapan`).on('click', function () {
+            var hocPhanID = $('#select-HocPhan').val();
+            var mucDoDe = $('#mucDoDe').val();
+            var mucDoTrungBinh = $('#mucDoTrungBinh').val();
+            var mucDoKho = $('#mucDoKho').val();
+            if (checkEmptyBlank(mucDoDe) || checkEmptyBlank(mucDoTrungBinh) ||
+                checkEmptyBlank(mucDoKho) || checkEmptyBlank(hocPhanID)) {
+                alert('Học phần và số lượng câu hỏi không được trống');
+            } else {
+                var flag = false;
+                if (parseInt(mucDoDe) > 0) {
+                    var formData = {
+                        'HocPhanID': hocPhanID,
+                        'MucDo': 1,
+                    }
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/CauHoiApi/GetsByHocPhanID',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(formData),
+                        success: function (data) {
+                            if (data != null && data != "") {
+                                if (parseInt(mucDoDe) > data.length) {
+                                    alert("Số câu hỏi mức độ dễ vượt quá ngân hàng câu hỏi");
+                                    flag = true;
+                                    return;
+                                }
+                                for (var i = 0; i < parseInt(mucDoDe); i++) {
+                                    arrCauHoiDeThi.push(data[i]);
+                                }
+                                console.log(arrCauHoiDeThi);
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Lấy danh sách câu hỏi dễ thất bại');
+                        }
+                    });
+                }
+                if (parseInt(mucDoTrungBinh) > 0 && (flag == false)) {
+                    var formData = {
+                        'HocPhanID': hocPhanID,
+                        'MucDo': 2,
+                    }
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/CauHoiApi/GetsByHocPhanID',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(formData),
+                        success: function (data) {
+                            if (data != null && data != "") {
+                                if (parseInt(mucDoTrungBinh) > data.length) {
+                                    alert("Số câu hỏi mức trung bình vượt quá ngân hàng câu hỏi");
+                                    flag = true;
+                                    return;
+                                }
+                                for (var i = 0; i < parseInt(mucDoTrungBinh); i++) {
+                                    arrCauHoiDeThi.push(data[i]);
+                                }
+                                console.log(arrCauHoiDeThi);
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Lấy danh sách câu hỏi trung bình thất bại');
+                        }
+                    });
+                }
+                if (parseInt(mucDoKho) > 0 && (flag == false)) {
+                    var formData = {
+                        'HocPhanID': hocPhanID,
+                        'MucDo': 3,
+                    }
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/CauHoiApi/GetsByHocPhanID',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(formData),
+                        success: function (data) {
+                            if (data != null && data != "") {
+                                if (parseInt(mucDoKho) > data.length) {
+                                    alert("Số câu mức độ khó vượt quá ngân hàng câu hỏi");
+                                    flag = true;
+                                    return;
+                                }
+                                for (var i = 0; i < parseInt(mucDoKho); i++) {
+                                    arrCauHoiDeThi.push(data[i]);
+                                }
+                                console.log(arrCauHoiDeThi);
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Lấy danh sách câu hỏi khó thất bại');
+                        }
+                    });
+                }
+                if (!flag) {
+                    AppendCauHoi();
+                } else {
+                    arrCauHoiDeThi = [];
+                }
+            }
+        });
+
+        $('#btn-add-dethi').on('click', function () {
+            if (arrIDCauHoi.length > 0) {
+                var noiDung = $('#noiDung').val();
+                var ngayThi = $('#ngayThi').val();
+                var thoiGianThi = $('#thoiGianThi').val();
+                var thoiLuongThi = $('#thoiLuongLamBai').val();
+                var trangThai = $('input[type="radio"][name="trang-thai"]:checked').val();
+                var hocPhanID = $('#select-HocPhan').val();
+                var mucDoDe = $('#mucDoDe').val();
+                var mucDoTrungBinh = $('#mucDoTrungBinh').val();
+                var mucDoKho = $('#mucDoKho').val();
+                var sinhVien = $('#select-SinhVien').val(); // array
+                if (noiDung == null || noiDung.trim() == "") {
+                    alert('Thông tin bắt buộc không được để trống');
+                    return;
+                }
+                if (checkEmptyBlank(mucDoDe) || checkEmptyBlank(mucDoTrungBinh) || checkEmptyBlank(mucDoKho) ||
+                    checkEmptyBlank(thoiLuongThi) || checkEmptyBlank(thoiGianThi) || checkEmptyBlank(hocPhanID) ||
+                    checkEmptyBlank(trangThai) || checkEmptyBlank(sinhVien.toString()) || checkEmptyBlank(ngayThi) ) {
+                    alert('Thông tin bắt buộc không được để trống');
+                } else {
+                    ngayThi = ngayThi.split('/');
+                    var thoiGian = `${ngayThi[2]}/${ngayThi[1]}/${ngayThi[0]} ${thoiGianThi}`
+                    var dataDeThi = {
+                        "NoiDung": noiDung.trim(),
+                        "SoCauHoi": parseInt(mucDoDe) + parseInt(mucDoTrungBinh) + parseInt(mucDoKho),
+                        "TrangThai": parseInt(trangThai),
+                        "ThoiLuongThi": parseInt(thoiLuongThi),
+                        "HocPhanID": parseInt(hocPhanID),
+                        "ThoiGian": thoiGian,
+                        "MaVaoThi": generate_String()
+                    }
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/DeThiApi/Add',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataDeThi),
+                        success: function (data) {
+                            if (data != 0) {
+                                DeThi_CauHoi_Add(data.DeThiID);
+                                DeThi_SinhVien_Add(data.DeThiID, sinhVien);
+                                alert("Thêm mới đề thi thành công");
+                                var href = '@Url.Action("QuanLyDeThi","DeThi")';
+                                window.location.href = href;
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi !');
+                        }
+                    });
+                }
+            } else {
+                alert("Chưa trộn câu hỏi");
+            }
+        });
+        $('#btn-huy').on('click', function () {
+            var href = '@Url.Action("QuanLyDeThi","DeThi")';
+            window.location.href = href;
+        })
+    });
+
+    function DeThi_CauHoi_Add(id) {
+        for (var i = 0; i < arrIDCauHoi.length; i++) {
+            var dataDeThi_CauHoi = {
+                "DeThiID": id,
+                "CauHoiID": arrIDCauHoi[i]
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DeThiApi/DeThi_CauHoi_Add',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataDeThi_CauHoi),
+                success: function (data) {
+
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+        }
+    }
+    function DeThi_SinhVien_Add(id, SV) {
+        for (var i = 0; i < SV.length; i++) {
+            var dataDeThi_SinhVien = {
+                "DeThiID": id,
+                "MaSinhVien": SV[i]
+            }
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DeThiApi/DeThi_SinhVien_Add',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataDeThi_SinhVien),
+                success: function (data) {
+
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+        }
+    }
+    function LoadHocPhan() {
+        var dataFrom = {
+            "TuKhoa": null,
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/HocPhanApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(dataFrom),
+            success: function (data) {
+                if (data != 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        $(`#select-HocPhan`).append(`<option value=${data[i].HocPhanID}>${data[i].TenHocPhan}</option>`);
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadSinhVien() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/SinhVienApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        $(`#select-SinhVien`).append(`<option value=${data[i].MaSinhVien}>${data[i].MaSinhVien} - ${data[i].HoTen}</option>`);
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+
+    function AppendCauHoi() {
+
+        $(`#appendCauHoi`).remove();
+        var dataCauHoi = arrCauHoiDeThi;
+
+        for (var i = 0; i < dataCauHoi.length; i++) {
+            var stt = i + 1;
+            var noiDung = `Câu ${stt}: ${dataCauHoi[i].NoiDung}`
+            arrIDCauHoi.push(dataCauHoi[i].CauHoiID)
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DapAnApi/GetsByID?id=' + dataCauHoi[i].CauHoiID,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data != "" && data != null) {
+                        $('#form-CauHoi').append(`<div class="form-row" id="appendCauHoi"></div>`)
+                        $(`#appendCauHoi`).append(`<div id="appendDapAn${stt}" class="form-group col-md-12">`
+                            + `<label class="col-md-12"><strong>${noiDung}</strong></label>`
+                            + `</div>`)
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].DapAnDung == 1) {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-12 text-danger">${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            } else {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-12">${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+        arrCauHoiDeThi = []
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    function generate_String(n = 5) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < n; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
+</script>

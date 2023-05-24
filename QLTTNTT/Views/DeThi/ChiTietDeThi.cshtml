@@ -1,0 +1,385 @@
+﻿
+@{
+    ViewBag.Title = "Chi tiết phòng thi";
+}
+<style>
+    input[type=radio] {
+        background-color: blue;
+    }
+
+    .noclick {
+        pointer-events: none;
+    }
+   
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
+<script src="~/Themes/bower_components/bootstrap-datepicker/dist/js/bootstrap-datetimepicker.min.js"></script>
+@*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">*@
+<link href="~/Themes/bower_components/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active card mb-4">
+        <div class="card-header py-3 text-right">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#modalThongBao">Gửi thông báo</button>
+        </div>
+        <div class="card-body">
+            <div class="form-row" id="form-CauHoi">
+                <div class="form-group col-md-12">
+                    <label id="testThongBao"></label>
+                    <label>Nội dung</label>
+                    <textarea id="noiDung" type="text" class="form-control" placeholder="Nhập" readonly></textarea>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Học phần</label>
+                    <input id="select-HocPhan" class="form-control" readonly />
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="d-block">Trạng thái</label>
+                    <input id="trangThai" class="form-control" readonly />
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Mã vào thi</label>
+                    <input id="maVaoThi" readonly type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Ngày thi</label>
+                    <div class="form-group">
+                        <div class="input-group date yyyy">
+                            <input type="text" class="form-control datepicker" placeholder="Chọn" id="ngayThi" disabled>
+                            <div class="input-group-addon input-group-append">
+                                <div class="input-group-text text-primary">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Thời gian thi</label>
+                    <div class="form-group">
+                        <div class="input-group date yyyy">
+                            <input type="text" class="form-control timepicker" placeholder="Chọn" id="thoiGianThi" disabled>
+                            <div class="input-group-addon input-group-append">
+                                <div class="input-group-text text-primary">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6 form-radio-button">
+                    <label>Thời lượng làm bài (phút)</label>
+                    <input type="text" id="thoiLuongLamBai" class="form-control check-num" placeholder="Nhập" disabled />
+                </div>
+                <div class="form-group col-md-12" style="width: 100%;">
+                    <label>Sinh viên</label>
+                    <select id="select-SinhVien" multiple disabled>
+                        <option></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Số lượng câu hỏi</label>
+
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Dễ</label>
+                    <input type="text" id="mucDoDe" class="form-control check-num" placeholder="Nhập" disabled />
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Trung bình</label>
+                    <input type="text" id="mucDoTrungBinh" class="form-control check-num" placeholder="Nhập" disabled />
+                </div>
+                <div class="form-group col-md-3 form-radio-button">
+                    <label>Khó</label>
+                    <input type="text" id="mucDoKho" class="form-control check-num" placeholder="Nhập" disabled />
+                </div>
+            </div>
+
+            <div class="group-button-action text-right mt-30">
+                <button type="button" id="btn-huy" style="margin-right: 5px;" class="btn btn-success">Trở về</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thông báo  -->
+<div class="modal fade" id="modalThongBao" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Thông báo</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <label>Gửi thông báo thi đến sinh viên</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="btn-thongbao" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>
+<script type="text/javascript">
+    const APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var arrCauHoiDeThi = [];
+    var arrIDCauHoi = [];
+    var deThiID = '@ViewBag.DeThiID';
+    var idSV = [];
+    var dataDeThi = [];
+    $(document).ready(function () {
+        LoadHocPhan();
+        LoadSinhVien();
+        LoadDeThi();
+        LoadCauHoi();
+
+        $(`#select-SinhVien`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn sinh viên",
+            width: "100%",
+            allowClear: true
+        });
+
+        $('#btn-thongbao').on('click', function () {
+            if (idSV != "") {
+                var flag = false
+                idSV.forEach(item => {
+                    var dataThongBao = {
+                        "MaSinhVien": item,
+                        "DeThiID": deThiID,
+                        "NoiDung": `${dataDeThi.NoiDung} </br>Học phần: ${dataDeThi.TenHocPhan}</br> Thời gian: ${FormatThoiGianThi(dataDeThi.ThoiGian)} </br> Mã vào phòn thi: ${dataDeThi.MaVaoThi}`
+                    }
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/DeThiApi/ThongBao',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataThongBao),
+                        success: function (data) {
+                            if (data != null && data != "") {
+                                flag = true;
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi !');
+                        }
+                    });
+                })
+                if (!flag) {
+                    alert("Có lỗi xảy ra. Gửi thông báo thất bại");
+                    $("#modalThongBao").modal('hide');
+                } else {
+                    alert("Gửi thông báo thành công");
+                    $("#modalThongBao").modal('hide');
+                }
+            }
+        });
+        $('#btn-huy').on('click', function () {
+            var href = '@Url.Action("QuanLyDeThi","DeThi")';
+            window.location.href = href;
+        });
+    });
+    function LoadCauHoi() {
+        var mdDe = 0, mdTrungBinh = 0, mdKho = 0;
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DeThiApi/DeThi_CauHoi_GetByID?deThiID=' + deThiID,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    data.forEach(item => {
+                        arrIDCauHoi.push(item.CauHoiID);
+                        if (item.MucDo == 1) {
+                            mdDe += 1;
+                        } else if (item.MucDo == 2) {
+                            mdTrungBinh += 1;
+                        } else if (item.MucDo == 3) {
+                            mdKho += 1;
+                        }
+                    })
+
+                    $('#mucDoDe').val(mdDe);
+                    $('#mucDoTrungBinh').val(mdTrungBinh);
+                    $('#mucDoKho').val(mdKho);
+                    AppendCauHoi(data);
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadHocPhan() {
+        var hocPhan = [];
+        var dataFrom = {
+            "TuKhoa": null,
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/HocPhanApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(dataFrom),
+            success: function (data) {
+                if (data != 0) {
+                    hocPhan = data;
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+        return hocPhan;
+    }
+    function LoadSinhVien() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/SinhVienApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    data.forEach(item => {
+                        $(`#select-SinhVien`).append(`<option value=${item.MaSinhVien}>${item.MaSinhVien} - ${item.HoTen}</option>`);
+                    });
+                }
+                AppendSinhVien();
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadDeThi() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DeThiApi/GetByID?id=' + deThiID,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    dataDeThi = data;
+                    AppendDeThi(data);
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+
+
+    function AppendSinhVien() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/DeThiApi/DeThi_SinhVien_GetByID?deThiID=' + deThiID,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    data.forEach(item => {
+                        idSV.push(item.MaSinhVien);
+                    });
+                    $('#select-SinhVien').val(idSV).trigger('change');
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function AppendCauHoi(dataCauHoi) {
+        $(`#appendCauHoi`).remove();
+        for (var i = 0; i < dataCauHoi.length; i++) {
+            var stt = i + 1;
+            var noiDung = `Câu ${stt}: ${dataCauHoi[i].NoiDung}`
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/DapAnApi/GetsByID?id=' + dataCauHoi[i].CauHoiID,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data != "" && data != null) {
+                        $('#form-CauHoi').append(`<div class="form-row" id="appendCauHoi"></div>`)
+                        $(`#appendCauHoi`).append(`<div id="appendDapAn${stt}" class="form-group col-md-12">`
+                            + `<label class="col-md-12"><strong>${noiDung}</strong></label>`
+                            + `</div>`)
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].DapAnDung == 1) {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-12 text-danger">${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            } else {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-12">${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+        arrCauHoiDeThi = []
+    }
+    function AppendDeThi(data) {
+        if (data.ThoiGian != null) {
+            var ngayThi = data.ThoiGian.slice(0, 10);
+            var thoiGianThi = data.ThoiGian.slice(11, 16);
+            $('#ngayThi').val(FormatDate(ngayThi));
+            $('#thoiGianThi').val(thoiGianThi);
+        }
+      
+        $('#noiDung').val(data.NoiDung == null ? "" : data.NoiDung);
+        $('#maVaoThi').val(data.MaVaoThi == null ? "" : data.MaVaoThi);
+        $('#thoiLuongLamBai').val(data.ThoiLuongThi == null ? "" : data.ThoiLuongThi);
+        if (data.TrangThai == 0) {
+            $('#trangThai').val("Đã đóng");
+        } else {
+            $('#trangThai').val("Đang mở");
+        }
+        var dataHocPhan = LoadHocPhan();
+        dataHocPhan.forEach(item => {
+            if (item.MaHocPhan == data.MaHocPhan) {
+                $('#select-HocPhan').val(data.TenHocPhan);
+            }
+        })
+    }
+   
+    //format ddMMyyyy
+    function FormatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        return `${day}/${month}/${year}`
+    }
+    //format ddMMyyyy HH:mm
+    function FormatThoiGianThi(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        return `${day}/${month}/${year} vào lúc ${hour}:${minute}`
+    }
+</script>

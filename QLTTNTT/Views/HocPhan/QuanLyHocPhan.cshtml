@@ -1,0 +1,475 @@
+﻿
+@{
+
+}
+<style>
+    .paginate_button {
+        margin: 10px;
+        font-weight: 900;
+        color: black;
+    }
+
+        .paginate_button.current {
+            color: red !important;
+        }
+</style>
+
+<div class="box-header">
+    <h3>Quản lý học phần</h3>
+</div>
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active">
+        <div>
+            <div class="card mb-4">
+                <div class="card-header py-3 text-right">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modalAddHocPhan">Thêm mới</button>
+                    <button class="btn btn-danger" id="mul-delete-hocphan">Xóa</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="dataGridHocPhan" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="mt-head"></th>
+                                    <th class="text-center mt-head">STT</th>
+                                    <th class="text-center">Tên học phần</th>
+                                    <th class="text-center">Mã học phần</th>
+                                    <th class="text-center mt-head">Mô tả</th>
+                                    <th class="text-center mt-head">Chức năng
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa  -->
+<div class="modal fade" id="modalEditHocPhan" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelEdit">Cập nhật học phần</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formEdit">
+                    <input type="hidden" class="form-control" id="hocPhanIDEdit">
+                    <div class="form-group">
+                        <label for="tenHocPhanEdit" class="editor-label">Tên học phần<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="tenHocPhanEdit">
+                    </div>
+                    <div class="form-group">
+                        <label for="maHocPhanEdit" class="editor-label">Mã học phần<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="maHocPhanEdit">
+                    </div>
+                    <div class="form-group">
+                        <label for="moTaEdit" class="editor-label">Mô tả</label>
+                        <textarea class="form-control check-mdv" id="moTaEdit"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button type="button" id="edit-hoc-phan" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm mới  -->
+<div class="modal fade" id="modalAddHocPhan" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelAdd">Thêm mới học phần</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd" ">
+                    <div class="form-group">
+                        <label for="tenHocPhanAdd" class="editor-label">Tên học phần<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="tenHocPhanAdd">
+                    </div>
+                    <div class="form-group">
+                        <label for="maHocPhanAdd" class="editor-label">Mã học phần<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="maHocPhanAdd">
+                    </div>
+                    <div class="form-group">
+                        <label for="moTaAdd" class="editor-label">Mô tả</label>
+                        <textarea class="form-control check-mdv" id="moTaAdd"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button onclick="AddHocPhan()" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa  -->
+<div class="modal fade" id="modalDeleteHocPhan" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa học phần</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="hocPhanIDDelete" hidden />
+                    <label>Xác nhận xóa học phần này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="delete-hocphan" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalDeletesHocPhan" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa học phần</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="text" hidden id="listHocPhanID" />
+                    <label>Xác nhận xóa học phần này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button onclick="DeletesHocPhan()" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataHocPhan = [];
+    $(document).ready(function () {
+        function buildData() {
+            var tuKhoa = null;
+            const request = {
+                "TuKhoa": tuKhoa,
+            };
+            return request;
+        }
+        // datatable
+        $('#dataGridHocPhan').dataTable({
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+
+
+            "ajax": {
+                url: APIURL + '/api/HocPhanApi/Gets',
+                type: "post",
+                data: buildData,
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                        }
+                        dataHocPhan = data;
+                        return data;
+                    }
+                }
+            },
+
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+                {
+                    targets: 5,
+                    render: function (data, type, row, meta) {
+                        return '<span style="font-size: 25px; margin-right: 15px" data-toggle="tooltip" title="Chỉnh sửa" class="fas fa-pencil-alt  text-primary edit-btn" id=n-"' + meta.row + '">  </span><span style="font-size: 25px" data-toggle="tooltip" title="Xóa" class="fa fa-trash delete-btn text-danger" id=n-"' + meta.row + '"></span>';
+                    }
+                },
+                {
+                    targets: [2, 3],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            deferRender: true,
+            "columns": [
+                { data: "HocPhanID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "TenHocPhan", "width": "400px", "class": "left-align" },
+                { data: "MaHocPhan", "width": "200px", "class": "text-center " },
+                { data: "MoTa", "width": "150px", "class": "left-center" },
+                { data: "", "width": "100px", "class": "text-center" },
+            ]
+        });
+        $('#dataGridHocPhan tbody').on('click', '.edit-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridHocPhan').DataTable().row(id).data();
+            $('#hocPhanIDEdit').val(data.HocPhanID);
+            $('#tenHocPhanEdit').val(data.TenHocPhan);
+            $('#maHocPhanEdit').val(data.MaHocPhan);
+            $('#moTaEdit').val(data.MoTa);
+            $('#modalEditHocPhan').modal('show');
+        });
+        $('#dataGridHocPhan tbody').on('click', '.delete-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridHocPhan').DataTable().row(id).data();
+            $('#hocPhanIDDelete').val(data.HocPhanID);
+            $('#modalDeleteHocPhan').modal('show');
+        });
+        $('#edit-hoc-phan').on('click', function () {
+            var hocPhanID = $('#hocPhanIDEdit').val();
+            var tenHocPhan = $('#tenHocPhanEdit').val();
+            var maHocPhan = $('#maHocPhanEdit').val();
+            var moTa = $('#moTaEdit').val();
+            if (checkEmptyBlank(moTa)) {
+                moTa = "";
+            } else {
+                moTa = moTa.trim();
+            }
+            if (checkEmptyBlank(tenHocPhan) || checkEmptyBlank(maHocPhan)) {
+                alert("Thông tin bắt buộc không được để trống");
+            } else {
+                var dataCheck = {
+                    "HocPhanID": hocPhanID,
+                    "MaHocPhan": maHocPhan.trim(),
+                }
+                var dataHocPhanEdit = {
+                    "HocPhanID": hocPhanID,
+                    "TenHocPhan": tenHocPhan.trim(),
+                    "MaHocPhan": maHocPhan.trim(),
+                    "MoTa": moTa
+                }
+                var check = false;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/HocPhanApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (!check) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/HocPhanApi/Edit',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataHocPhanEdit),
+                        success: function (data) {
+                            alert("Cập nhật học phần thành công");
+                            $("#modalEditHocPhan").modal('hide');
+                            $('#dataGridHocPhan').DataTable().ajax.reload().draw();
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Cập nhật học phần thất bại');
+                        }
+                    });
+                } else {
+                    alert('Mã học phần đã tồn tại');
+                }
+            }
+        });
+        $('#delete-hocphan').on('click', function () {
+            var hocPhanID = $('#hocPhanIDDelete').val();
+            if (!checkEmptyBlank(hocPhanID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/HocPhanApi/Delete?id=' + hocPhanID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalDeleteHocPhan').modal('hide');
+                        $('#dataGridHocPhan').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa học phần thất bại');
+                    }
+                });
+            }
+        });
+        $('#mul-delete-hocphan').on('click', function () {
+
+            var oTable = $('#dataGridHocPhan').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            console.log(list);
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn học phần cần xóa");
+            } else {
+                $('#listHocPhanID').val(list);
+                $('#modalDeletesHocPhan').modal('show');
+            }
+
+        });
+        $("#modalAddHocPhan").on('hide.bs.modal', function () {
+            resetForm();
+        });
+    });
+
+
+    function AddHocPhan() {
+        var tenHocPhan = $('#tenHocPhanAdd').val();
+        var maHocPhan = $('#maHocPhanAdd').val();
+        var moTa = $('#moTaAdd').val();
+        if (checkEmptyBlank(moTa)) {
+            moTa = "";
+        } else {
+            moTa = moTa.trim();
+        }
+        if (checkEmptyBlank(tenHocPhan) || checkEmptyBlank(maHocPhan)) {
+            alert("Thông tin bắt buộc không được để trống");
+        } else {
+            var dataCheck = {
+                "HocPhanID": 0,
+                "MaHocPhan": maHocPhan.trim(),
+            }
+            var dataHocPhanAdd = {
+                "TenHocPhan": tenHocPhan.trim(),
+                "MaHocPhan": maHocPhan.trim(),
+                "MoTa": moTa
+            }
+            var check = false;
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/HocPhanApi/Check',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataCheck),
+                success: function (data) {
+                    if (data != 0) {
+                        check = true;
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi !');
+                }
+            });
+            if (!check) {
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/HocPhanApi/Add',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataHocPhanAdd),
+                    success: function (data) {
+                        alert("Thêm mới học phần thành công");
+                        $("#modalAddHocPhan").modal('hide');
+                        $('#dataGridHocPhan').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Thêm mới học phần thất bại');
+                    }
+                });
+            } else {
+                alert('Mã học phần đã tồn tại');
+            }
+        }
+    }
+    function DeletesHocPhan() {
+        var listHocPhanID = $('#listHocPhanID').val();
+        if (checkEmptyBlank(listHocPhanID)) {
+            alert("Chọn học phần cần xóa");
+        } else {
+            $.ajax({
+                type: "delete",
+                async: false,
+                url: APIURL + '/api/HocPhanApi/Deletes?listID=' + listHocPhanID,
+                contentType: 'application/json: charset=uft-8',
+                success: function (data) {
+                    $('#modalDeletesHocPhan').modal('hide');
+                    $('#dataGridHocPhan').DataTable().ajax.reload().draw();
+                },
+                error: function (err) {
+                    alert('Lỗi ! Xóa học phần thất bại');
+                }
+            });
+        }
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    // RESET FORM
+    function resetForm() {
+        $('input').val('');
+        $('textarea').val('');
+    }
+
+
+</script>
+
+

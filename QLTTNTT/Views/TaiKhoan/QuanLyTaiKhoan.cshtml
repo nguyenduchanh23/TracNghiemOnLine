@@ -1,0 +1,588 @@
+﻿
+@{
+
+}
+
+<style>
+    .paginate_button {
+        margin: 10px;
+        font-weight: 900;
+        color: black;
+    }
+
+        .paginate_button.current {
+            color: red !important;
+        }
+        input[type=checbox]{
+            background-color: blue;
+        }
+    .noclick {
+        pointer-events: none;
+    }
+</style>
+<div class="box-header">
+    <h3>Quản lý tài khoản</h3>
+</div>
+
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active">
+        <div>
+            <div class="card mb-4">
+                <div class="card-header py-3 text-right">
+                    <button type="button" class="btn btn-info" id="btn-export-excel">Xuất excel</button>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modalTaiKhoanAdd">Thêm mới</button>
+                    <button class="btn btn-danger" id="show-deletes">Xóa</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="dataGridTaiKhoan" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="mt-head"></th>
+                                    <th class="text-center mt-head">STT</th>
+                                    <th class="text-center">Tên tài khoản</th>
+                                    <th class="text-center mt-head">Vai trò</th>
+                                    <th class="text-center mt-head">Hoạt động</th>
+                                    <th class="text-center">Mật khẩu</th>
+                                    <th class="text-center mt-head">Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal chỉnh sửa  -->
+<div class="modal fade" id="modalTaiKhoanEdit" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelEdit">Cập nhật tài khoản</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formEdit">
+                    <input type="hidden" class="form-control" id="taiKhoanIDEdit">
+                    <div class="form-group">
+                        <label for="usernameEdit" class="editor-label">Tên tài khoản<span class="text-danger"> *</span></label>
+                        <input disabled class="form-control check-mdv" id="usernameEdit">
+                    </div>
+                    <div class="form-group row">
+                        <label class="editor-label col-md-3">Hoạt động<span class="text-danger"> *</span></label>
+                        <div class="text-left">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="trangThaiEdit" id="trang-thai-mo-edit" value="1">
+                                <label class="form-check-label" for="trang-thai-mo-edit">
+                                    Mở
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="trangThaiEdit" id="trang-thai-khoa-edit" value="0">
+                                <label class="form-check-label" for="trang-thai-khoa-edit">
+                                    Khóa
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button type="button" id="edit" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm mới  -->
+<div class="modal fade" id="modalTaiKhoanAdd" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelAdd">Thêm mới tài khoản</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <div class="form-group">
+                        <label for="usernameAdd" class="editor-label">Tên tài khoản<span class="text-danger"> *</span></label>
+                        <input class="form-control check-mdv" id="usernameAdd">
+                    </div>
+                    <div class="form-group">
+                        <label for="passAdd" class="editor-label">Mật khẩu<span class="text-danger"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="passAdd" />
+                    </div>
+                    <div class="form-group">
+                        <label for="passConfirmAdd" class="editor-label">Xác nhận mật khẩu<span class="text-danger"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="passConfirmAdd" />
+                    </div>
+                    <div class="form-group row">
+                        <label class="editor-label col-md-3">Hoạt động<span class="text-danger"> *</span></label>
+                        <div class="text-left">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="trangThaiAdd" id="trang-thai-mo" value="1" checked />
+                                <label class="form-check-label" for="trang-thai-mo">
+                                    Mở
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="trangThaiAdd" id="trang-thai-khoa" value="0" />
+                                <label class="form-check-label" for="trang-thai-khoa">
+                                    Khóa
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="add" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa  -->
+<div class="modal fade" id="modalTaiKhoanDelete" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa tài khoản</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="taiKhoanIDDelete" hidden />
+                    <label>Xác nhận xóa tài khoản này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="delete" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalTaiKhoanDeletes" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa tài khoản</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="text" hidden id="listTaiKhoanID" />
+                    <label>Xác nhận xóa các tài khoản này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="deletes" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal đổi mật khẩu  -->
+<div class="modal fade" id="modalDoiMatKhau" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelAdd">Đổi mật khẩu</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="usernameChangePass" hidden />
+                    <div class="form-group">
+                        <label for="passChange" class="editor-label">Mật khẩu<span class="text-danger"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="passChange" />
+                    </div>
+                    <div class="form-group">
+                        <label for="passConfirmChange" class="editor-label">Xác nhận mật khẩu<span class="text-danger"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="passConfirmChange" />
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="change" type="button" class="btn btn-submit-form btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataHocPhan = [];
+    $(document).ready(function () {
+
+        // datatable
+        $('#dataGridTaiKhoan').dataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    title: 'Danh sách tài khoản',
+                    text: 'Xuất execl',
+                    exportOptions: {
+                        columns: [1, 2, 5]
+                    },
+                    className: 'export d-none'
+                }
+            ],
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/TaiKhoanApi/Gets',
+                type: "post",
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                        }
+                    }
+                    return data;
+                }
+            },
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            columnDefs: [
+
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+                {
+                    targets: 4,
+                    render: function (data, type, row, meta) {
+                        if (data == 1) {
+                            return '<input  class="form-check-input noclick" type="checkbox" checked>'
+                        } else {
+                            return '<input class="form-check-input" type="checkbox" disabled>'
+                        }
+
+                    }
+                },
+                {
+                    targets: 6,
+                    render: function (data, type, row, meta) {
+                        return '<span style="font-size: 25px; margin-right: 15px" data-toggle="tooltip" title="Chỉnh sửa" class="fas fa-pencil-alt  text-primary edit-btn" id=n-"' + meta.row + '"></span> <span style="font-size: 25px; margin-right: 15px;" data-toggle="tooltip" title="Xóa" class="fa fa-trash delete-btn text-danger" id=n-"' + meta.row + '"></span> <span style="font-size: 25px;" data-toggle="tooltip" title="Đổi mật khẩu" class="fas fa-key change-pass-btn text-warning" id=n-"' + meta.row + '"></span>';
+                    }
+                },
+                {
+                    targets: [2],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            order: [[1, 'asc']],
+            deferRender: true,
+            "columns": [
+                { data: "TaiKhoanID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "Username", "width": "400px", "class": "left-align" },
+                { data: "Quyen", "width": "150px", "class": "text-center" },
+                { data: "TrangThai", "width": "150px", "class": "text-center" },
+                { data: "Password_Random", "visible": false, "width": "150px", "class": "text-center" },
+                { data: "", "width": "150px", "class": "text-center" },
+            ]
+        });
+        $('#dataGridTaiKhoan tbody').on('click', '.edit-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridTaiKhoan').DataTable().row(id).data();
+            $('#usernameEdit').val(data.Username);
+            $('input:radio[name="trangThaiEdit"]').val([data.TrangThai]);
+            $('#taiKhoanIDEdit').val(data.TaiKhoanID);
+            $('#modalTaiKhoanEdit').modal('show');
+        });
+        $('#dataGridTaiKhoan tbody').on('click', '.delete-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridTaiKhoan').DataTable().row(id).data();
+            $('#taiKhoanIDDelete').val(data.TaiKhoanID);
+            $('#modalTaiKhoanDelete').modal('show');
+        });
+        $('#dataGridTaiKhoan tbody').on('click', '.change-pass-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridTaiKhoan').DataTable().row(id).data();
+            $('#usernameChangePass').val(data.Username);
+            $('#modalDoiMatKhau').modal('show');
+        });
+
+        $('#add').on('click', function () {
+            var username = $('#usernameAdd').val();
+            var pass = $('#passAdd').val();
+            var passConfirm = $('#passConfirmAdd').val();
+            var trangThai = $('input[type="radio"][name="trangThaiAdd"]:checked').val();
+
+            if (checkEmptyBlank(username) || checkEmptyBlank(pass) || checkEmptyBlank(passConfirm) || checkEmptyBlank(trangThai)) {
+                alert("Thông tin bắt buộc không được để trống");
+                return;
+            } else {
+                if (pass.localeCompare(passConfirm) != 0) {
+                    alert("Xác nhận mật khẩu không trùng khớp !");
+                    return;
+                } else if (pass.length < 8 || !CheckMatKhau(pass)) {
+                    alert("Mật khẩu tối đa 8 ký tự bao gồm cả số, chữ cái và ký tự đặc biệt !");
+                    return;
+                }
+                var dataCheck = {
+                    "Username": username,
+                }
+                var dataTaiKhoan = {
+                    "Username": username.trim(),
+                    "Password": pass,
+                    "TrangThai": parseInt(trangThai),
+                    "Quyen": 2,
+                    "Password_Random": pass
+                }
+                var check = false;
+                var tb = 0;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/TaiKhoanApi/Check',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data == 1) {
+                            check = false;
+                        } else {
+                            tb = data;
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (!check) {
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/TaiKhoanApi/Add',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataTaiKhoan),
+                        success: function (data) {
+                            if (data != null) {
+                                alert("Thêm mới tài khoản thành công");
+                                $("#modalTaiKhoanAdd").modal('hide');
+                                $('#dataGridTaiKhoan').DataTable().ajax.reload().draw();
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Thêm mới tài khoản thất bại');
+                        }
+                    });
+                } else {
+                    if (tb > 1) {
+                        alert('Tài khoản đã tồn tại !');
+                    } else {
+                        alert('Sinh viên không tồn tại !');
+                    }
+                }
+            }
+        });
+        $('#edit').on('click', function () {
+            var taiKhoanID = $('#taiKhoanIDEdit').val();
+            var username = $('#usernameEdit').val();
+            var trangThai = $('input[type="radio"][name="trangThaiEdit"]:checked').val();
+            if (checkEmptyBlank(username) || checkEmptyBlank(trangThai)) {
+                alert("Thông tin bắt buộc không được để trống");
+            } else {
+                var dataEdit = {
+                    'TaiKhoanID': parseInt(taiKhoanID),
+                    'Username': username,
+                    'TrangThai': parseInt(trangThai)
+                }
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/TaiKhoanApi/DoiTrangThai',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataEdit),
+                    success: function (data) {
+                        alert("Cập nhật tài khoản thành công");
+                        $("#modalTaiKhoanEdit").modal('hide');
+                        $('#dataGridTaiKhoan').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Cập nhật tài khoản thất bại');
+                    }
+                });
+            }
+        });
+        $('#delete').on('click', function () {
+            var taiKhoanID = $('#taiKhoanIDDelete').val();
+            if (!checkEmptyBlank(taiKhoanID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/TaiKhoanApi/Delete?id=' + taiKhoanID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalTaiKhoanDelete').modal('hide');
+                        $('#dataGridTaiKhoan').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa tài khoản thất bại');
+                    }
+                });
+            }
+        });
+        $('#show-deletes').on('click', function () {
+            var oTable = $('#dataGridTaiKhoan').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn tài khoản cần xóa");
+            } else {
+                $('#listTaiKhoanID').val(list);
+                $('#modalTaiKhoanDeletes').modal('show');
+            }
+
+        });
+        $('#deletes').on('click', function () {
+            var listID = $('#listTaiKhoanID').val();
+            if (!checkEmptyBlank(listID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/TaiKhoanApi/Deletes?listID=' + listID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalTaiKhoanDeletes').modal('hide');
+                        $('#dataGridTaiKhoan').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa loại câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        $('#change').on('click', function () {
+            var username = $('#usernameChangePass').val();
+            var pass = $('#passChange').val();
+            var passConfirm = $('#passConfirmChange').val();
+
+            if (checkEmptyBlank(username) || checkEmptyBlank(pass) || checkEmptyBlank(passConfirm)) {
+                alert("Thông tin bắt buộc không được để trống");
+            } else {
+                if (pass.localeCompare(passConfirm) != 0) {
+                    alert("Xác nhận mật khẩu không trùng khớp !");
+                } else if (pass.length < 8 || !CheckMatKhau(pass)) {
+                    alert("Mật khẩu tối đa 8 ký tự bao gồm cả số, chữ cái và ký tự đặc biệt !");
+                } else {
+                    var dataPass = {
+                        "Username": username,
+                        "Password": pass,
+                        "Password_Random": pass
+                    }
+                    $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/TaiKhoanApi/DoiMatKhau',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataPass),
+                        success: function (data) {
+                            if (data != null) {
+                                alert("Đổi mật khẩu thành công");
+                                $("#modalDoiMatKhau").modal('hide');
+                                $('#dataGridTaiKhoan').DataTable().ajax.reload().draw();
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Đổi mật khẩu thất bại');
+                        }
+                    });
+                }
+
+            }
+        });
+        // BTN XUẤT EXCEL
+        $('#btn-export-excel').on('click', function () {
+            $('#dataGridTaiKhoan_wrapper button.buttons-excel.buttons-html5').click();
+        });
+
+        $("#modalTaiKhoanAdd").on('hide.bs.modal', function () {
+            $('#usernameAdd').val("");
+            $('#passAdd').val("");
+            $('#passConfirmAdd').val("");
+            $('input:radio[name="trangThaiAdd"]').val([1]);
+        });
+    });
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+
+
+    // Kiểm tra mật khẩu
+    function CheckMatKhau(mk) {
+        const specialChars = /[`!#$%^&*()@@_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        return specialChars.test(mk);
+    }
+
+</script>
+
+

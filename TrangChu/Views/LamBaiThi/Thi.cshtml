@@ -1,0 +1,408 @@
+﻿
+@{
+    ViewBag.Title = "Thi";
+    var masv = HttpContext.Current.Session["MaSV"].ToString();
+}
+<style>
+    .time {
+        display: grid;
+        grid-template-columns: 90% 60px 60px 60px;
+    }
+
+    #day,
+    #hour,
+    #minute,
+    #second {
+        font-size: 30px;
+        font-weight: bold;
+    }
+</style>
+<br />
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active card mb-4">
+        <div class="card-body">
+            <div class="form-row" id="form-CauHoi">
+                <div class="form-group col-md-6">
+                    <h3 id="noiDung" class="text-center" style="color:red">THI KẾT THÚC HỌC KỲ II NĂM 2023-2024</h3>
+                    <h4 id="hocPhan" class="text-center">Học phần: Mạng máy tính</h4>
+                    <h5 id="thoiLuongLamBai" class="text-center bg-gray-900"><em>Thời giam làm bài: 90 phút</em></h5>
+                </div>
+                <div class="title-body col-md-12">
+                    <div class="container" style="text-align:right">
+                        <label class="h4" style="text-align:right;"><b>Thời gian còn lại</b></label>
+                        <div class="time">
+                            <div class="h4 item">
+                                <label style="color: green" id="hour"></label>
+                            </div>
+                            <div style="text-align:center;" class="h4 item">
+                                <label style="color: green" id="minute"></label>
+                            </div>
+                            <div style="text-align:left;" class="h4 item">
+                                <label style="color: green" id="second"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="group-button-action mt-30" style="text-align: right">
+                <button id="show-modal-nopbai" style="margin-right: 50px;" class="btn btn-success">Nộp bài</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xác nhận nộp bài  -->
+<div class="modal fade" id="modalNopBai" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Nộp bài</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <label class="h4">Xác nhận nộp bài ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button id="hidden-modal-nopbai"type="button" class="btn btn-close-form btn-outline-primary">Hủy bỏ</button>
+                            <button id="btn-nopbai" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var deThiID = '@ViewBag.DeThiID';
+    var dataMotDapAn = [];
+    var dataNhieuDapAn = [];
+    var thoiLuongLamBai = 0;
+    var thoiGianBatDau;
+    var dataDeThi = [];
+    var MSV = '@masv';
+    $(document).ready(function () {
+        LoadDeThi();
+        LoadCauHoi();
+        $('#btn-nopbai').on('click', function () {
+            var dataLength = dataMotDapAn.concat(dataNhieuDapAn);
+            var soDapAnDung = 0;
+            for (var i = 0; i < dataMotDapAn.length; i++) {
+                var item = $(`input[type="radio"][name="dap-an${i+1}"]:checked`).val();
+                if (item == 1) {
+                    soDapAnDung += 1;
+                }
+            }
+            for (var i = dataMotDapAn.length; i < dataLength.length; i++) {
+                var check = false;
+                var checkboxs = document.getElementsByName(`dap-an${i+1}`);
+                for (var j = 0; j < checkboxs.length; j++) {
+                    if (checkboxs[j].checked === true) {
+                        if (parseInt(checkboxs[j].value) == 1) {
+                            check = true;
+                        } else {
+                            check = false;
+                            break;
+                        }
+                    }
+                }
+                if (check) {
+                    soDapAnDung += 1;
+                }
+            }
+            LuuKetQua(soDapAnDung);
+        });
+        $('#show-modal-nopbai').on('click', function () {
+            $('#modalNopBai').modal('show');
+        })
+        $('#hidden-modal-nopbai').on('click', function () {
+            $('#modalNopBai').modal('hide');
+        })
+    });
+    function LoadDeThi() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/PhongThiApi/GetByID?id=' + deThiID,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    dataDeThi = data;
+                    thoiGianBatDau = data.ThoiGian;
+                    thoiLuongLamBai = parseInt(data.ThoiLuongThi);
+                    AppendDeThi(data);
+
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function LoadCauHoi() {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/PhongThiApi/DeThi_CauHoi_GetByID?deThiID=' + deThiID,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    //data.forEach(item => {
+                    //    arrIDCauHoi.push(item.CauHoiID);
+                    //    if (item.MucDo == 1) {
+                    //        mdDe += 1;
+                    //    } else if (item.MucDo == 2) {
+                    //        mdTrungBinh += 1;
+                    //    } else if (item.MucDo == 3) {
+                    //        mdKho += 1;
+                    //    }
+                    //})
+
+                    //$('#mucDoDe').val(mdDe);
+                    //$('#mucDoTrungBinh').val(mdTrungBinh);
+                    //$('#mucDoKho').val(mdKho);
+
+                    data.forEach(item => {
+                        if (item.LoaiID == 6) {
+                            dataNhieuDapAn.push(item);
+                        } else {
+                            dataMotDapAn.push(item);
+                        }
+                    })
+                    console.log(dataNhieuDapAn)
+                    console.log(dataMotDapAn)
+
+                    if (dataMotDapAn.length > 0) {
+                        AppendCauHoiMotDapAn(dataMotDapAn);
+                    }
+                    if (dataNhieuDapAn.length > 0) {
+                        AppendCauHoiNhieuDapAn(dataNhieuDapAn);
+                    }
+
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    function AppendCauHoiMotDapAn(dataCauHoi) {
+        $(`#appendCauHoi`).remove();
+        for (var i = 0; i < dataCauHoi.length; i++) {
+            var stt = i + 1;
+            var noiDung = `Câu ${stt}: ${dataCauHoi[i].NoiDung}`
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/PhongThiApi/GetsDapAnByID?id=' + dataCauHoi[i].CauHoiID,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data != "" && data != null) {
+                        $('#form-CauHoi').append(`<div class="form-row" id="appendCauHoi"></div>`)
+                        $(`#appendCauHoi`).append(`</br><div id="appendDapAn${stt}" class="form-group col-md-9">`
+                            + `<label class="col-md-12"><strong>${noiDung}</strong></label>`
+                            + `</div>`)
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].DapAnDung == 1) {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-9"><input type="radio" name="dap-an${stt}" value="1"> ${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            } else {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-9"><input type="radio" name="dap-an${stt}" value="0"> ${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label></br>`)
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+        arrCauHoiDeThi = []
+    }
+    function AppendCauHoiNhieuDapAn(dataCauHoi) {
+        dataCauHoi = dataMotDapAn.concat(dataCauHoi);
+        for (var i = dataMotDapAn.length; i < dataCauHoi.length; i++) {
+            var stt = i + 1;
+            var noiDung = `Câu ${stt}: ${dataCauHoi[i].NoiDung}`
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: APIURL + '/api/PhongThiApi/GetsDapAnByID?id=' + dataCauHoi[i].CauHoiID,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data != "" && data != null) {
+                        $('#form-CauHoi').append(`<div class="form-row" id="appendCauHoi"></div>`)
+                        $(`#appendCauHoi`).append(`</br><div id="appendDapAn${stt}" class="form-group col-md-9">`
+                            + `<label class="col-md-12"><strong>${noiDung}</strong></label>`
+                            + `</div>`)
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].DapAnDung == 1) {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-9"><input type="checkbox" name="dap-an${stt}" value="1"> ${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            } else {
+                                $(`#appendDapAn${stt}`).append(`<label class="col-md-9"><input type="checkbox" name="dap-an${stt}" value="0"> ${String.fromCharCode(65 + i)}: ${data[i].CauTraLoi}</label>`)
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert('Lỗi ! Thêm đáp án thất bại');
+                }
+            });
+        }
+        arrCauHoiDeThi = []
+    }
+    function AppendDeThi(data) {
+        $('#thoiLuongLamBai').html(`Thời gian làm bài: ${data.ThoiLuongThi} phút`);
+        $('#noiDung').html(data.NoiDung.toUpperCase());
+        $('#hocPhan').html(`Học phần: ${data.TenHocPhan}`);
+    }
+    function LuuKetQua(soDapAnDung) {
+        var diem = 10 / dataDeThi.SoCauHoi;
+        diem = Math.round(diem * soDapAnDung * 100) / 100;
+        var Data = {
+            "DeThiID": deThiID,
+            "MaSinhVien": MSV,
+            "Diem": parseFloat(diem),
+            "ThoiGianLamBai": ThoiGianThi(),
+            "SoCauHoiDung": parseInt(soDapAnDung)
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/KetQuaApi/Add',
+            data: JSON.stringify(Data),
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null && data != "") {
+                    const redi = '@Url.Action("KetQua","LamBaiThi")?dethiID=' + deThiID + '&masv=' + MSV ;
+                    window.location.href = redi;
+                }
+            },
+            error: function (err) {
+                alert("Lỗi !");
+            }
+        });
+    }
+    function ThoiGianThi() {
+        var now = new Date().getTime();
+        var batDauThi = new Date(thoiGianBatDau).getTime();
+        // Thời gian chênh lệch
+        var distance = now - batDauThi;
+        // Tính toán số ngày, giờ, phút, giây từ thời gian chênh lệch
+        var gio = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var phut = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var giay = Math.floor((distance % (1000 * 60)) / 1000);
+        return `${gio}:${phut}:${giay}`
+    }
+
+    //TIME COUNTDOWN
+    window.onload = function () {
+        //-reverse clock
+        // Thiết lập thời gian đích mà ta sẽ đếm
+        var end = thoiLuongLamBai * 60 * 1000;
+        var countDownDate = new Date(thoiGianBatDau).getTime() + end;
+
+        // cập nhập thời gian sau mỗi 1 giây
+        var x = setInterval(function () {
+
+            // Lấy thời gian hiện tại
+            var now = new Date().getTime();
+            // Lấy số thời gian chênh lệch
+
+            var distance = countDownDate - now;
+            // Tính toán số ngày, giờ, phút, giây từ thời gian chênh lệch
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            if (hours < 10) {
+                hours = "0" + hours;
+            }
+
+            // HIển thị chuỗi thời gian trong thẻ p
+            // time.textContent = date + " : " + hours + " : " + minutes + " : " + seconds;
+            if (distance > 0) {
+                hour.textContent = `${hours} :`;
+                minute.textContent = `${minutes} :`;
+                second.textContent = seconds;
+            } else {
+                hour.textContent = "00 :";
+                minute.textContent = "00 :";
+                second.textContent = "00";
+            }
+
+
+            // Nếu thời gian kết thúc, hiển thị chuỗi thông báo
+            if (false/*distance < 0*/) {
+                clearInterval(x);
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/PhongThiApi/DongDeThi?deThiID=' + deThiID,
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        if (data != 0) {
+                        }
+                    },
+                    error: function (err) {
+                    }
+                });
+                $('#btn-nopbai').click();
+                //document.getElementById("demo").innerHTML = "Thời gian đếm ngược đã kết thúc";
+            }
+        }, 1000);
+    };
+    // Thoát trang
+    window.onbeforeunload = function (event) {
+        event.preventDefault();
+        event.returnValue = '';
+    };
+    $(function () {
+        $("#btn-nopbai").click(function () {
+            window.onbeforeunload = null;
+        });
+    });
+    //format mmDDyyyyHHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${month}${day}${year}${hour}${minute}${second}`
+    }
+
+    //format yyyyMMdd HHmmSS
+    function formatDate2(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${year}${month}${day}${hour}${minute}${second}`
+    }
+    
+</script>
+

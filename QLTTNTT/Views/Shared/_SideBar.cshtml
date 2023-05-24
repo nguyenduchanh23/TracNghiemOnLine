@@ -1,0 +1,85 @@
+﻿<style>
+    .text{
+        color: white;
+    }
+    .bg-gradient-primary {
+        background-image: linear-gradient(#333, #333, #333, #333 55%);
+    }
+</style>
+<!-- Sidebar -->
+<ul style=" "class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="~/ThongKe/index">
+        <div class="sidebar-brand-icon text-primary">
+            <i class="fa fa-bank"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Quản trị hệ thống</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link" href="~/ThongKe/index">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Thống kê</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Quản lý danh mục</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="~/LoaiCauHoi/QuanLyLoaiCauHoi">Loại câu hỏi</a>
+                <a class="collapse-item" href="~/CauHoi/QuanLyCauHoi">Câu hỏi</a>
+                <a class="collapse-item" href="~/HocPhan/QuanLyHocPhan">Học phần</a>
+            </div>
+        </div>
+    </li>
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
+           aria-expanded="true" aria-controls="collapseThree">
+            <i class="fas fa-fw fa-paste"></i>
+            <span>Quản lý thi</span>
+        </a>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="~/DeThi/QuanLyDeThi">Đề thi</a>
+                <a class="collapse-item" href="#">Lịch sử thi</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+           aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-user"></i>
+            <span>Quản lý người dùng</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="~/SinhVien/QuanLySinhVien">Sinh viên</a>
+                <a class="collapse-item" href="~/TaiKhoan/QuanLyTaiKhoan">Tài khoản</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->

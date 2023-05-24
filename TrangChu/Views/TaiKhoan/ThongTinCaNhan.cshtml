@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "ThongTinCaNhan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img  id="hinhAnh" src="" alt="avatar"
+                             class="rounded-circle img-fluid" style="width: 200px;">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p class="h4">Thông tin cá nhân</p>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Họ tên</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p id="hoTen" class="text-muted mb-0"></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Mã sinh viên</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p id="maSinhVien"class="text-muted mb-0"></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Giới tính</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p id="gioiTinh" class="text-muted mb-0"></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Ngày sinh</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p id="ngaySinh" class="text-muted mb-0"></p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Địa chỉ</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p id="diaChi" class="text-muted mb-0">TP Huế</p>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-sm-6 "></div>
+                            <div class="col-sm-6 ">
+                                <div class="group-button-action ">
+                                    <div style="text-align: right;">
+                                        <a href="~/Home/Index" class="btn btn-success text-right">Trở về</a>
+                                        <button type="button" id="btn-chinhsua" class="btn btn-submit-form btn-primary text-right">Chỉnh sửa</button>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var id = '@ViewBag.id';
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    $(function () {
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/SinhVienApi/GetByID?id=' + id,
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != null) {
+                    AppendThongTinCaNhan(data);
+                }
+            },
+            error: function (err) {
+                alert('Lỗi ! Thêm đáp án thất bại');
+            }
+        });
+    });
+    function AppendThongTinCaNhan(data) {
+        $('#hoTen').html(data.HoTen != null ? data.HoTen : "");
+        $('#maSinhVien').html(data.MaSinhVien != null ? data.MaSinhVien : "");
+        $('#gioiTinh').html(data.GioiTinh == 1 ? "Nam" : "Nữ");
+        $('#diaChi').html(data.DiaChi != null ? data.DiaChi : "");
+        $('#ngaySinh').html(data.NgaySinh != null ? formatDate(data.NgaySinh) : "");
+        $('#hinhAnh').attr("src", `/${data.HinhAnh}`);
+    }
+    //format ddMMyyyy
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        return `${day}/${month}/${year}`
+    }
+</script>

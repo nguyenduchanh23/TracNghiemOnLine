@@ -1,0 +1,77 @@
+﻿@{ 
+    var name = HttpContext.Current.Session["User"].ToString();
+    var masv = HttpContext.Current.Session["MaSV"].ToString();
+}
+<style>
+    .badge-danger {
+        color: #fff;
+        background-color: #e74a3b;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25em 0.4em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.35rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+</style>
+<!-- Navbar Start -->
+<nav class="nav navbar-expand-lg bg-white navbar-light shadow sticky-top p-sm-0">
+    <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+        <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Thi trực tuyến</h2>
+    </a>
+    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <a id="nav4" href="~/LichSuThi/LichSu/@masv" class="click nav-item nav-link">Lịch sử thi</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link text-danger" data-bs-toggle="dropdown"><i class="bi bi-bell-fill text-danger"></i> Thông báo</a>
+                <div class="dropdown-menu fade-down m-0">
+                    <a id="nav5" href="team.html" class="dropdown-item"><i class="fa fa-user text-info"></i>  Thông tin cá nhân</a>
+                    <a id="nav6" href="testimonial.html" class="dropdown-item"><i class="fa fa-lock text-warning"></i>  Đổi mật khẩu</a>
+                    <a id="nav7" href="404.html" class="dropdown-item"><i class="fa fa-sign-out text-danger"></i>  Đăng xuất</a>
+                </div>
+            </div>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link text-danger" data-bs-toggle="dropdown"><strong>@name</strong></a>
+                <div class="dropdown-menu fade-down m-0">
+                    <a href="~/TaiKhoan/ThongTinCaNhan/@masv" class="dropdown-item"><i class="fa fa-user text-info"></i>  Thông tin cá nhân</a>
+                    <a href="testimonial.html" class="dropdown-item"><i class="fa fa-lock text-warning"></i>  Đổi mật khẩu</a>
+                    <a onclick="OpenModal()"class="dropdown-item" href="#"><i class="fa fa-sign-out text-danger"></i>  Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- Navbar End -->
+<!-- Logout Modal-->
+<div class="modal fade" id="modalLogout" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Xác nhận đăng xuất khỏi hệ thống?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                   <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                <a class="btn btn-primary" href="~/TaiKhoan/Logout">Đồng ý</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function OpenModal() {
+        $('#modalLogout').modal('show');
+    }
+</script>

@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "LichSu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var masv = HttpContext.Current.Session["MaSV"].ToString();
+}
+
+<br />
+<p class="h3">Lịch sử thi</p>
+<div class="container-fluid">
+    <table id="dataGirdPhongThi" class="table table-bordered table-hover dataTable no-footer" style="width:100%">
+        <thead>
+            <tr>
+                <th class="text-center mt-head text-primary">STT</th>
+                <th class="text-left mt-head text-primary">Nội dung</th>
+                <th class="text-center mt-head text-primary">Học phần</th>
+                <th class="text-center mt-head text-primary">Số câu đúng</th>
+                <th class="text-center text-primary">Điểm</th>
+                <th class="text-center text-primary">Thời gian thi</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataDeThi = [];
+    $(document).ready(function () {
+        $('#dataGirdPhongThi').DataTable({
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "searching": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/KetQuaApi/GetByMaSV?maSV=' + '@masv',
+                type: "post",
+                async: false,
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        dataDeThi = data;
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                            //Hiển thị thời gian bắt đầu thi đã formart
+                            data[i].ThoiGianBatDau = formatDate(data[i].ThoiGian);
+
+                            data[i].HocPhan = `${data[i].TenHocPhan} - ${data[i].MaHocPhan}`;
+                            data[i].ThoiGian = formatDate(data[i].ThoiGian);
+                            data[i].CauHoiDung = `${data[i].SoCauHoiDung}/${data[i].SoCauHoi}`
+                        }
+                    }
+                    return data;
+                }
+            },
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(0)', row).html(index + 1);
+            },
+            columnDefs: [
+                //{
+                //    targets: 2,
+                //    render: function (data, type, row, meta) {
+                //        return '<span id=n-"' + meta.row + '">' + data + '</span>'
+                //    }
+                
+                {
+                    targets: [4, 5],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            deferRender: true,
+            "columns": [
+                { data: "stt", "width": "40px", "class": "text-center" },
+                { data: "NoiDung", "width": "400px", "class": "left-align"},
+                { data: "HocPhan", "width": "250px", "class": "text-center" },
+                { data: "CauHoiDung", "width": "250px", "class": "text-center" },
+                { data: "Diem", "width": "80px", "class": "text-center" },
+                { data: "ThoiGianBatDau", "width": "150px", "class": "text-center" },
+            ]
+        });
+        $('#dataGirdPhongThi tbody').on('click', '.btn-vaothi', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGirdPhongThi').DataTable().row(id).data();
+            $('#deThiID').val(data.DeThiID);
+            $('#thoiGian').val(data.ThoiGian);
+            $('#modalVaoPhongThi').modal('show');
+        });
+       
+    });
+
+    //format mmDDyyyyHHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${day}/${month}/${year} ${hour}:${minute}:${second}`
+    }
+</script>

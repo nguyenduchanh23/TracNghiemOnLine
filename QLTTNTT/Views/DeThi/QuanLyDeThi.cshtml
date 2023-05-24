@@ -1,0 +1,435 @@
+﻿<style>
+    .paginate_button {
+        margin: 10px;
+        font-weight: 900;
+        color: black;
+    }
+
+        .paginate_button.current {
+            color: red !important;
+        }
+    .pointer {
+        cursor: pointer;
+        font-weight:700;
+    }
+</style>
+<div class="box-header">
+    <h3>Danh sách phòng thi</h3>
+</div>
+<div class="tab-content" style="box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.50) !important;">
+    <div id="tab1" class="tab-pane fade show active">
+        <div>
+            <div class="card-header py-3" style="margin-top:10px">
+                <div class="box-body row">
+                    <div class="col-md-3">
+                        <div class="input-group date yyyy">
+                            <input type="text" class="form-control dd-mm-yyyy" placeholder="Chọn ngày thi" id="filter_ngayThi">
+                            <div class="input-group-addon input-group-append">
+                                <div class="input-group-text text-primary">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="filter_hocphan_tab1" class="text-right" style="width:100%">
+                            <option></option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filter_trangThai" class="text-right" style="width:100%">
+                            <option selected></option>
+                            <option value="1">Mở</option>
+                            <option value="0">Đóng</option>
+                            <option value="-1">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header py-3 text-right">
+                    <a href="@Url.Action("ThemMoiDeThi", "DeThi",new { url = "ThemMoi"})" class="btn btn-primary">Thêm mới</a>
+                    <button class="btn btn-danger" id="show-deletes">Xóa</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="dataGridDeThi" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="mt-head"></th>
+                                    <th class="text-center text-primary mt-head">STT</th>
+                                    <th class="text-center text-primary">Nội dung</th>
+                                    <th class="text-center text-primary">Mã Học phần</th>
+                                    <th class="text-center text-primary">Thời gian thi</th>
+                                    <th class="text-center text-primary mt-head">Trạng thái</th>
+                                    <th class="text-center text-primary mt-head">Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa  -->
+<div class="modal fade" id="modalDeThiDelete" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa phòng thi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input id="deThiIDDelete" class="form-control" hidden />
+                    <label>Xác nhận xóa phòng thi này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="btn-delete" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalDeThiDeletes" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa phòng thi</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="hidden" class="form-control" id="listDeThiID" />
+                    <label>Xác nhận xóa các phòng thi này ?</label>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="btn-deletes" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+
+
+    $(document).ready(function () {
+        LoadHocPhan();
+        $('.dd-mm-yyyy').datetimepicker({
+            "locale": 'vi',
+            "format": "DD/MM/YYYY",
+        });
+        $('.datepicker').datepicker({
+            "format": "dd/mm/yyyy",
+            icons: {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up: "fa fa-chevron-up",
+                down: "fa fa-chevron-down",
+                previous: 'fa fa-chevron-left',
+                next: 'fa fa-chevron-right',
+                today: 'fa fa-screenshot',
+                clear: 'fa fa-trash',
+                close: 'fa fa-remove'
+            }
+        });
+        
+        $(`#filter_hocphan_tab1`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn học phần",
+            width: 'resolve',
+            allowClear: true
+        });
+        $(`#filter_trangThai`).select2({
+            theme: 'bootstrap4',
+            placeholder: "Chọn trạng thái",
+            width: 'resolve',
+            allowClear: true
+        });
+        //
+        function fileReader(oEvent) {
+            var oFile = oEvent.target.files[0];
+            var sFilename = oFile.name;
+
+            var reader = new FileReader();
+            var result = {};
+            reader.onload = function (e) {
+                var data = e.target.result;
+                data = new Uint8Array(data);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var result = {};
+                workbook.SheetNames.forEach(function (sheetName) {
+                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+                    if (roa.length) result[sheetName] = roa;
+                });
+                // see the result, caution: it works after reader event is done.
+
+                console.log(result);
+                CauHoiAdd(result);
+            };
+
+            reader.readAsArrayBuffer(oFile);
+        };
+
+        // ddMMyyyy
+        $('.dd-mm-yyyy').datetimepicker({
+            "locale": 'vi',
+            "format": "DD/MM/YYYY",
+        });
+        function Filter() {
+            var hocPhanID = $('#filter_hocphan_tab1').val();
+            var trangThai = $('#filter_trangThai').val();
+            var ngayThi = $('#filter_ngayThi').val();
+            if (ngayThi != "") {
+                ngayThi = ngayThi.split('/');
+                ngayThi = `${ngayThi[2]}-${ngayThi[1]}-${ngayThi[0]}`
+            }
+            if (hocPhanID == "") hocPhanID = 0;
+            if (trangThai == "") trangThai = -1;
+            var dataFilter = {
+                "HocPhanID":  parseInt(hocPhanID),
+                "TrangThai": parseInt(trangThai),
+                "ThoiGian": ngayThi
+            }
+            return dataFilter;
+        }
+        // datatable
+        $('#dataGridDeThi').dataTable({
+            "autoWidth": false,
+            "ordering": true,
+            "bInfo": true,
+            "bLengthChange": false,
+            "bPaginate": true,
+            "filter": true,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/DeThiApi/Filter',
+                type: "post",
+                data: Filter,
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                            data[i].ThoiGian = formatDate(data[i].ThoiGian);
+                            if (data[i].TrangThai == 1) {
+                                data[i].TrangThai = "Mở";
+                            } else {
+                                data[i].TrangThai = "Đóng";
+                            }
+                        }
+                    }
+                    return data;
+                }
+            },
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+                {
+                    targets: 2,
+                    render: function (data, type, row, meta) {
+                        return '<span id=n-"' + meta.row + '">' + data + '</span>'
+                    }
+                },
+
+                {
+                    targets: 6,
+                    render: function (data, type, row, meta) {
+                        return '<span style="font-size: 25px; margin-right: 15px" data-toggle="tooltip" title="Chỉnh sửa" class="fas fa-pencil-alt  text-primary edit-btn" id=n-"' + meta.row + '">  </span><span style="font-size: 25px" data-toggle="tooltip" title="Xóa" class="fa fa-trash delete-btn text-danger" id=n-"' + meta.row + '"></span>';
+                    }
+                },
+                {
+                    targets: [2, 3, 4],
+                    "orderable": true,
+                },
+                {
+                    orderable: false,
+                    targets: "mt-head"
+                }
+            ],
+            order: [[1, 'asc']],
+            deferRender: true,
+            "columns": [
+                { data: "DeThiID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "NoiDung", "width": "700px", "class": "left-align text-primary detail-link pointer" },
+                { data: "MaHocPhan", "width": "150px", "class": "text-center" },
+                { data: "ThoiGian", "width": "200px", "class": "text-center" },
+                { data: "TrangThai", "width": "120px", "class": "text-center" },
+                { data: "", "width": "150px", "class": "text-center" },
+            ]
+        });
+        $('#dataGridDeThi tbody').on('click', '.edit-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridDeThi').DataTable().row(id).data();
+            var href = '@Url.Action("ChinhSuaDeThi","DeThi")?id=' + data.DeThiID;
+            window.location.href = href;
+        });
+        $('#dataGridDeThi tbody').on('click', '.delete-btn', function () {
+            var id = $(this).attr("ID").match(/\d+/)[0];
+            var data = $('#dataGridDeThi').DataTable().row(id).data();
+            $('#deThiIDDelete').val(data.DeThiID);
+            $('#modalDeThiDelete').modal('show');
+        });
+        $('#dataGridDeThi tbody').on('click', '.detail-link', function () {
+            var id = $(this).children().attr("id").match(/\d+/)[0];
+            var data = $('#dataGridDeThi').DataTable().row(id).data();
+            var href = '@Url.Action("ChiTietDeThi","DeThi")?id=' + data.DeThiID;
+            window.location.href = href;
+        });
+        $('#show-deletes').on('click', function () {
+            var oTable = $('#dataGridDeThi').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn phòng thi cần xóa");
+            } else {
+                $('#listDeThiID').val(list);
+                $('#modalDeThiDeletes').modal('show');
+            }
+
+        });
+       
+        $('#btn-delete').on('click', function () {
+            var deThiID = $('#deThiIDDelete').val();
+            if (!checkEmptyBlank(deThiID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/DeThiApi/Delete?id=' + deThiID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalDeThiDelete').modal('hide');
+                        //LoadCauHoi();
+                        $('#dataGridDeThi').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        $('#btn-deletes').on('click', function () {
+            var listID = $('#listDeThiID').val();
+            if (!checkEmptyBlank(listID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/DeThiApi/Deletes?listID=' + listID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalDeThiDeletes').modal('hide');
+                        //LoadCauHoi();
+                        $('#dataGridDeThi').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa câu hỏi thất bại');
+                    }
+                });
+            }
+        });
+        // ON CHANGE FILTER
+        $('#filter_hocphan_tab1').change(function () {
+            $('#dataGridDeThi').DataTable().ajax.reload().draw();
+        })
+        $('#filter_trangThai').change(function () {
+            $('#dataGridDeThi').DataTable().ajax.reload().draw();
+        })
+        $('#filter_ngayThi').blur(function () {
+            $('#dataGridDeThi').DataTable().ajax.reload().draw();
+        })
+    });
+
+    function LoadHocPhan() {
+        var dataFrom = {
+            "TuKhoa": null,
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: APIURL + '/api/HocPhanApi/Gets',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(dataFrom),
+            success: function (data) {
+                if (data != 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        $(`#filter_hocphan_tab1`).append(`<option value=${data[i].HocPhanID}>${data[i].TenHocPhan}</option>`);
+                    }
+                }
+            },
+            error: function (err) {
+                alert('Lỗi !');
+            }
+        });
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    //format ddMMyyyy-HHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes(),
+            second = d.getSeconds()
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        if (second < 10) second = '0' + second
+        return `${day}/${month}/${year}-${hour}:${minute}`
+    }
+
+</script>
