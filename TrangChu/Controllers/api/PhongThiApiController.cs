@@ -23,11 +23,11 @@ namespace TrangChu.Controllers.api
        
 
         [HttpPost]
-        public async Task<HttpResponseMessage> CheckMaVaoThi(string ma)
+        public async Task<HttpResponseMessage> CheckMaVaoThi(string ma, int id)
         {
             try
             {
-                int item = await _Repository.CheckMaVaoThi(ma);
+                int item = await _Repository.CheckMaVaoThi(ma, id);
                 return Request.CreateResponse(HttpStatusCode.OK, item, "application/json");
             }
             catch (Exception ex)

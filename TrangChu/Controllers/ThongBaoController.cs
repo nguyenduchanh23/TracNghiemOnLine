@@ -6,14 +6,9 @@ using System.Web.Mvc;
 
 namespace TrangChu.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    public class ThongBaoController : Controller
     {
-        public ActionResult Index()
-        {
-            return View();
-        }
-
+        // GET: ThongBao
         public ActionResult ThongBao()
         {
             return View();

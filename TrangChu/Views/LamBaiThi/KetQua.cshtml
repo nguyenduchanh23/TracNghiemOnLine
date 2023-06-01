@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <br />
-<p class="h3">Danh sách phòng thi</p>
+<p class="h3">Kết quả</p>
 <div class="container-fluid">
-    <table id="dataGirdKetQua" class="table table-striped" style="width:100%">
+    <table id="dataGirdKetQua" class="table table-bordered table-hover dataTable no-footer" style="width:100%">
         <thead>
             <tr>
                 <th class="text-center text-primary">Nội dung</th>
@@ -94,7 +94,7 @@
             "columns": [
                 { data: "NoiDung", "width": "400px", "class": "left-align" },
                 { data: "HocPhan", "width": "250px", "class": "text-center" },
-                { data: "CauHoiDung", "width": "250px", "class": "text-center" },
+                { data: "CauHoiDung", "width": "100px", "class": "text-center" },
                 { data: "Diem", "width": "100px", "class": "text-center" },
                 { data: "ThoiGianLamBai", "width": "150px", "class": "text-center" },
                 { data: "ThoiGian", "width": "150px", "class": "text-center" },

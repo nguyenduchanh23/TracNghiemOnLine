@@ -302,7 +302,7 @@ namespace TrangChu.Repository
 
         }
 
-        public async Task<int> CheckMaVaoThi(string ma)
+        public async Task<int> CheckMaVaoThi(string ma, int id)
         {
             using (SqlConnection conn = IConnectData())
             {
@@ -311,6 +311,7 @@ namespace TrangChu.Repository
                     await conn.OpenAsync();
                     DynamicParameters parameters = new DynamicParameters();
                     parameters.Add("@MaVaoThi", ma);
+                    parameters.Add("@DeThiID", id);
                     int item = conn.QueryFirstOrDefault<int>("SP_TrangChu_DeThi_CheckMaVaoThi", parameters, commandType: CommandType.StoredProcedure);
                     return item;
 

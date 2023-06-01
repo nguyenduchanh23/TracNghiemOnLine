@@ -158,7 +158,7 @@
                     var dataThongBao = {
                         "MaSinhVien": item,
                         "DeThiID": deThiID,
-                        "NoiDung": `${dataDeThi.NoiDung} </br>Học phần: ${dataDeThi.TenHocPhan}</br> Thời gian: ${FormatThoiGianThi(dataDeThi.ThoiGian)} </br> Mã vào phòn thi: ${dataDeThi.MaVaoThi}`
+                        "NoiDung": `<b>Kỳ thi:</b> ${dataDeThi.NoiDung} </br><b>Học phần:</b> ${dataDeThi.TenHocPhan}-${dataDeThi.MaHocPhan}</br> <b>Thời gian:</b> ${FormatThoiGianThi(dataDeThi.ThoiGian)} </br><b>Mã vào phòng thi:</b> ${dataDeThi.MaVaoThi}`
                     }
                     $.ajax({
                         type: 'post',

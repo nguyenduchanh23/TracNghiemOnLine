@@ -82,5 +82,34 @@ namespace TrangChu.Repository
 
             }
         }
+
+        public async Task<int> CheckDoiMatKhau(TaiKhoan data)
+        {
+            string pass_Md5 = Hash(data.Password);
+            using (SqlConnection conn = IConnectData())
+            {
+                try
+                {
+                    await conn.OpenAsync();
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("@Username", data.Username);
+                    parameters.Add("@Password", pass_Md5);
+                    int item = conn.QueryFirstOrDefault<int>("SP_TrangChu_TaiKhoan_CheckDoiMatKhau", parameters, commandType: CommandType.StoredProcedure);
+                    return item;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    if (conn != null)
+                    {
+                        conn.Close();
+                    }
+                }
+
+            }
+        }
     }
 }

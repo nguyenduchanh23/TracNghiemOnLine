@@ -33,5 +33,33 @@ namespace TrangChu.Controllers.api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Lỗi :" + ex.Message, "application/json");
             }
         }
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> CheckDoiMatKhau(TaiKhoan data)
+        {
+            try
+            {
+                int item = await _repository.CheckDoiMatKhau(data);
+                return Request.CreateResponse(HttpStatusCode.OK, item, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Lỗi :" + ex.Message, "application/json");
+            }
+        }
+
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> DoiMatKhau(TaiKhoan data)
+        {
+            try
+            {
+                TaiKhoan item = await _repository.DoiMatKhau(data);
+                return Request.CreateResponse(HttpStatusCode.OK, item, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Lỗi :" + ex.Message, "application/json");
+            }
+        }
     }
 }

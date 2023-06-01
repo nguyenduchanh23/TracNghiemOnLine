@@ -1,4 +1,4 @@
-﻿@{ 
+﻿@{
     var name = HttpContext.Current.Session["User"].ToString();
     var masv = HttpContext.Current.Session["MaSV"].ToString();
 }
@@ -23,7 +23,7 @@
 </style>
 <!-- Navbar Start -->
 <nav class="nav navbar-expand-lg bg-white navbar-light shadow sticky-top p-sm-0">
-    <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+    <a href="Index" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
         <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Thi trực tuyến</h2>
     </a>
     <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -31,41 +31,68 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto p-4 p-lg-0">
-            <a id="nav4" href="~/LichSuThi/LichSu/@masv" class="click nav-item nav-link">Lịch sử thi</a>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link text-danger" data-bs-toggle="dropdown"><i class="bi bi-bell-fill text-danger"></i> Thông báo</a>
-                <div class="dropdown-menu fade-down m-0">
-                    <a id="nav5" href="team.html" class="dropdown-item"><i class="fa fa-user text-info"></i>  Thông tin cá nhân</a>
-                    <a id="nav6" href="testimonial.html" class="dropdown-item"><i class="fa fa-lock text-warning"></i>  Đổi mật khẩu</a>
-                    <a id="nav7" href="404.html" class="dropdown-item"><i class="fa fa-sign-out text-danger"></i>  Đăng xuất</a>
-                </div>
-            </div>
+            <a id="nav_dsPhongThi" href="~/Home/Index" class=" click nav-item nav-link">Danh sách phòng thi</a>
+            <a id="nav_lichSuThi" href="~/LichSuThi/LichSu/@masv" class=" click nav-item nav-link">Lịch sử thi</a>
+            <a href="~/Home/ThongBao" class="nav-link text-danger"><i class="bi bi-bell-fill"></i>@*<sup>+2</sup>*@</a>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link text-danger" data-bs-toggle="dropdown"><strong>@name</strong></a>
-                <div class="dropdown-menu fade-down m-0">
+                <div class="dropdown-menu fade-down m-0" style="margin-right: 30px">
                     <a href="~/TaiKhoan/ThongTinCaNhan/@masv" class="dropdown-item"><i class="fa fa-user text-info"></i>  Thông tin cá nhân</a>
-                    <a href="testimonial.html" class="dropdown-item"><i class="fa fa-lock text-warning"></i>  Đổi mật khẩu</a>
-                    <a onclick="OpenModal()"class="dropdown-item" href="#"><i class="fa fa-sign-out text-danger"></i>  Đăng xuất</a>
+                    <a onclick="OpenModalDoiMatKhau()" href="#" data-toggle="modal" data-target="#changePassword" class="dropdown-item"><i class="fa fa-lock text-warning"></i>  Đổi mật khẩu</a>
+
                 </div>
             </div>
+            <a onclick="OpenModal()" class=" click nav-item nav-link" href="#"><i class="fa fa-sign-out text-danger"></i>  Đăng xuất</a>
         </div>
     </div>
 </nav>
 <!-- Navbar End -->
 <!-- Logout Modal-->
-<div class="modal fade" id="modalLogout" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="modalLogout" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Xác nhận đăng xuất khỏi hệ thống?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                   <i class="fa fa-times"></i>
-                </button>
+                <h4 class="modal-title text-primary" id="exampleModalLabel">Xác nhận đăng xuất khỏi hệ thống?</h4>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
-                <a class="btn btn-primary" href="~/TaiKhoan/Logout">Đồng ý</a>
+            <div>
+                <div class="modal-footer">
+                    <div class="group-button-action">
+                        <button onclick="CloseModal()" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy</button>
+                        <a class="btn btn-primary" href="~/TaiKhoan/Logout">Đồng ý</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Đổi mật khẩu Modal-->
+<div class="modal fade" id="changePassword" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="loai-hinh-title" id="modalLabelEdit">Đổi mật khẩu</h5>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formEdit">
+                    <div class="form-group">
+                        <label for="matkhaucu" class="editor-label">Mật khẩu cũ<span class="red-text"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="matkhaucu" />
+                    </div>
+                    <div class="form-group">
+                        <label for="matkhaumoi" class="editor-label">Mật khẩu mới<span class="red-text"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="matkhaumoi" />
+                    </div>
+                    <div class="form-group">
+                        <label class="editor-label" for="xacnhanmatkhau">Xác nhận mật khẩu <span class="red-text"> *</span></label>
+                        <input type="password" class="form-control check-mdv" id="xacnhanmatkhau" />
+                    </div>
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button onclick="CloseModalDoiMatKhau()" type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button type="button" id="doi_mat_khau" class="btn btn-submit-form btn-primary">Đổi mật khẩu</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -73,5 +100,91 @@
 <script>
     function OpenModal() {
         $('#modalLogout').modal('show');
+    }
+    function CloseModal() {
+        $('#modalLogout').modal('hide');
+    }
+    function OpenModalDoiMatKhau() {
+        $('#changePassword').modal('show');
+    }
+    function CloseModalDoiMatKhau() {
+        $('#changePassword').modal('hide');
+    }
+    $(document).ready(function () {
+        $('#doi_mat_khau').on('click', function () {
+        var username = '@masv';
+        var passOld = $('#matkhaucu').val();
+        var passNew = $('#matkhaumoi').val();
+        var passConfirm = $('#xacnhanmatkhau').val();
+        if (checkEmptyBlank(passOld) || checkEmptyBlank(passNew) || checkEmptyBlank(passConfirm)) {
+            alert("Thông tin bắt buộc không được để trống");
+        } else {
+            if (passNew.localeCompare(passConfirm) != 0) {
+                alert("Xác nhận mật khẩu không trùng khớp !");
+            } else if (passNew.length < 8 || !CheckMatKhau(passNew)) {
+                alert("Mật khẩu tối đa 8 ký tự bao gồm cả số, chữ cái và ký tự đặc biệt !");
+            } else {
+                var dataMatKhau = {
+                    "Username": username,
+                    "Password": passNew,
+                    "Password_Random": passNew
+                }
+                var dataCheck = {
+                    "Username": username,
+                    "Password": passOld,
+                }
+                var check = false;
+                $.ajax({
+                    type: 'post',
+                    async: false,
+                    url: APIURL + '/api/TaiKhoanApi/CheckDoiMatKhau',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(dataCheck),
+                    success: function (data) {
+                        if (data != 0) {
+                            check = true;
+                        }
+                    },
+                    error: function (err) {
+                        alert('Lỗi !');
+                    }
+                });
+                if (check) {
+                   $.ajax({
+                        type: 'post',
+                        async: false,
+                        url: APIURL + '/api/TaiKhoanApi/DoiMatKhau',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(dataMatKhau),
+                        success: function (data) {
+                            if (data != null) {
+                                alert("Đổi mật khẩu thành công");
+                                var href = "/TaiKhoan/Logout";
+                                window.location.href = href;
+                            }
+                        },
+                        error: function (err) {
+                            alert('Lỗi ! Đổi mật khẩu thất bại');
+                        }
+                    });
+                } else {
+                    alert("Mật khẩu cũ không trùng khớp!");
+                }
+            }
+        }
+    })
+    })
+
+    // Kiểm tra mật khẩu
+    function CheckMatKhau(mk) {
+        const specialChars = /[`!#$%^&*()@@_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        return specialChars.test(mk);
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
     }
 </script>

@@ -32,5 +32,9 @@ namespace QLTTNTT.Interface
         #region ThongBao
         Task<ThongBao> ThongBao(ThongBao data);
         #endregion
+
+        #region LichSu
+        Task<IEnumerable<DeThiTrinhDien>> GetsLichSu();
+        #endregion
     }
 }

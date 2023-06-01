@@ -4,17 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace TrangChu.Controllers
+namespace QLTTNTT.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    public class LichSuThiController : Controller
     {
+        // GET: LichSuThi
         public ActionResult Index()
-        {
-            return View();
-        }
-
-        public ActionResult ThongBao()
         {
             return View();
         }

@@ -162,10 +162,12 @@
     <Compile Include="Controllers\api\PhongThiApiController.cs" />
     <Compile Include="Controllers\api\SinhVienApiController.cs" />
     <Compile Include="Controllers\api\TaiKhoanApiController.cs" />
+    <Compile Include="Controllers\api\ThongBaoApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LichSuThiController.cs" />
     <Compile Include="Controllers\LamBaiThiController.cs" />
     <Compile Include="Controllers\TaiKhoanController.cs" />
+    <Compile Include="Controllers\ThongBaoController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -180,6 +182,7 @@
     <Compile Include="Interface\IKetQuaRepository.cs" />
     <Compile Include="Interface\ISinhVienRepository.cs" />
     <Compile Include="Interface\ITaiKhoanRepository.cs" />
+    <Compile Include="Interface\IThongBaoRepository.cs" />
     <Compile Include="Models\ApiResult.cs" />
     <Compile Include="Models\CauHoi.cs" />
     <Compile Include="Models\DapAn.cs" />
@@ -202,6 +205,7 @@
     <Compile Include="Repository\LoaiCauHoiRepository.cs" />
     <Compile Include="Repository\SinhVienRepository.cs" />
     <Compile Include="Repository\TaiKhoanRepository.cs" />
+    <Compile Include="Repository\ThongBaoRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -2263,11 +2267,13 @@
     <Content Include="Views\TaiKhoan\ThongTinCaNhan.cshtml" />
     <Content Include="Views\LamBaiThi\KetQua.cshtml" />
     <Content Include="Views\LichSuThi\LichSu.cshtml" />
+    <Content Include="Views\Home\ThongBao.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="FileUpload\SinhVien\" />
     <Folder Include="Views\KetQua\" />
+    <Folder Include="Views\ThongBao\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

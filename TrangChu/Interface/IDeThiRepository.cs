@@ -32,7 +32,7 @@ namespace TrangChu.Interface
 
         #region PhongThi
         Task<IEnumerable<DeThiTrinhDien>> GetByMSV(string msv);
-        Task<int> CheckMaVaoThi(string ma);
+        Task<int> CheckMaVaoThi(string ma, int id);
         #endregion
     }
 }

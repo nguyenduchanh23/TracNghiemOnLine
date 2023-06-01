@@ -61,9 +61,10 @@ namespace TrangChu.Models
     }
     public class ThongBao
     {
-        public int ID { get; set; }
+        public int ThongBaoID { get; set; }
         public int DeThiID { get; set; }
         public string MaSinhVien { get; set; }
         public string NoiDung { get; set; }
+        public DateTime ThoiDiemGui { get; set; }
     }
 }

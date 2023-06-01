@@ -291,6 +291,15 @@
         var gio = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var phut = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var giay = Math.floor((distance % (1000 * 60)) / 1000);
+        if (gio <= 10) {
+            gio = `0${gio}`
+        }
+        if (phut < 10) {
+            phut = `0${phut}`
+        }
+        if (giay < 10) {
+            giay = `0${giay}`
+        }
         return `${gio}:${phut}:${giay}`
     }
 
@@ -338,7 +347,7 @@
 
 
             // Nếu thời gian kết thúc, hiển thị chuỗi thông báo
-            if (false/*distance < 0*/) {
+            if (distance < 0) {
                 clearInterval(x);
                 $.ajax({
                     type: 'post',
@@ -358,16 +367,7 @@
             }
         }, 1000);
     };
-    // Thoát trang
-    window.onbeforeunload = function (event) {
-        event.preventDefault();
-        event.returnValue = '';
-    };
-    $(function () {
-        $("#btn-nopbai").click(function () {
-            window.onbeforeunload = null;
-        });
-    });
+   
     //format mmDDyyyyHHmmSS
     function formatDate(date) {
         var d = new Date(date),

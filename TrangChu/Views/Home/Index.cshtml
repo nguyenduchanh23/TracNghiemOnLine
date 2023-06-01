@@ -6,7 +6,7 @@
 <br />
 <p class="h3">Danh sách phòng thi</p>
 <div class="container-fluid">
-    <table id="dataGirdPhongThi" class="table table-striped" style="width:100%">
+    <table id="dataGirdPhongThi" class="table table-bordered table-hover dataTable no-footer" style="width:100%">
         <thead>
             <tr>
                 <th class="text-center text-primary mt-head">STT</th>
@@ -161,7 +161,7 @@
                     $.ajax({
                         type: 'post',
                         async: false,
-                        url: APIURL + '/api/PhongThiApi/CheckMaVaoThi?ma=' + maVaoThi,
+                        url: APIURL + '/api/PhongThiApi/CheckMaVaoThi?ma=' + maVaoThi + '&id=' + deThiID,
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
                         success: function (data) {

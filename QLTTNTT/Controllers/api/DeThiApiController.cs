@@ -210,12 +210,29 @@ namespace QLTTNTT.Controllers.api
         #endregion
 
         #region ThongBao
+        [HttpPost]
         public async Task<HttpResponseMessage> ThongBao(ThongBao data)
         {
             try
             {
                 ThongBao item = null;
                 item = await _DeThiRepository.ThongBao(data);
+                return Request.CreateResponse(HttpStatusCode.OK, item, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Lỗi :" + ex.Message, "application/json");
+            }
+        }
+        #endregion
+        #region LichSu
+        [HttpPost]
+        public async Task<HttpResponseMessage> GetsLichSu()
+        {
+            try
+            {
+                IEnumerable<DeThiTrinhDien> item = null;
+                item = await _DeThiRepository.GetsLichSu();
                 return Request.CreateResponse(HttpStatusCode.OK, item, "application/json");
             }
             catch (Exception ex)

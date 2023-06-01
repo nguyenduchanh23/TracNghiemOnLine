@@ -103,7 +103,6 @@
                     data: JSON.stringify(dataTaiKhoan),
                     success: function (data) {
                         if (data != null  && data != "") {
-                            alert("Đăng nhập thành công thành công");
                             var href = '/TaiKhoan/CheckLogin?name=' + data.HoTen + "&masv=" + data.Username;
                              window.location.href = href;
                         } else {

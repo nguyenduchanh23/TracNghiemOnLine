@@ -374,5 +374,26 @@ namespace QLTTNTT.Repository
             }
         }
         #endregion
+
+        #region LichSuThi
+        public async Task<IEnumerable<DeThiTrinhDien>> GetsLichSu()
+        {
+            using (SqlConnection conn = IConnectData())
+            {
+                try
+                {
+                    await conn.OpenAsync();
+                    IEnumerable<DeThiTrinhDien> list = conn.Query<DeThiTrinhDien>("SP_QLTTNTT_DeThi_GetsLichSu", commandType: CommandType.StoredProcedure);
+                    return list;
+
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+
+        }
+        #endregion
     }
 }

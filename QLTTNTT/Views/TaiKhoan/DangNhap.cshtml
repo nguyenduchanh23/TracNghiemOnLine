@@ -109,7 +109,6 @@
                     data: JSON.stringify(dataTaiKhoan),
                     success: function (data) {
                         if (data.Username.localeCompare("0") != 0) {
-                            alert("Đăng nhập thành công thành công");
                             var href = '/TaiKhoan/Authorize?login=' + data.Username;
                              window.location.href = href;
                         } else {

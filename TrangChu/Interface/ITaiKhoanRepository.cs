@@ -11,6 +11,7 @@ namespace TrangChu.Interface
     {
         Task<TaiKhoan> DoiMatKhau(TaiKhoan data);
         Task<TaiKhoan> CheckLogin(TaiKhoan data);
+        Task<int> CheckDoiMatKhau(TaiKhoan data);
 
     }
 }

@@ -1,0 +1,187 @@
+﻿
+@{
+    ViewBag.Title = "ThongBao";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var masv = HttpContext.Current.Session["MaSV"].ToString();
+}
+<style>
+    .text_left {
+        text-align: left
+    }
+</style>
+<br />
+<p class="h3">Thông báo</p>
+
+<div class="container-fluid">
+    <div style="text-align:right">
+        <button id="show-deletes" class="btn btn-danger" id="show-deletes">Xóa</button>
+    </div>
+    <table id="dataGirdThongBao" class="table table-bordered table-hover dataTable no-footer" style="width:100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="text-center mt-head text-primary">STT</th>
+                <th class="text-center mt-head text-primary">Nội dung thông báo</th>
+                <th class="text-center mt-head text-primary">Thời điểm gửi</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Modal xóa multi -->
+<div class="modal fade" id="modalThongBaoDeletes" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-primary" id="modalLabelDelete">Xóa thông báo</h3>
+            </div>
+            <div class="modal-body">
+                <div role="form" id="formAdd">
+                    <input type="hidden" class="form-control" id="listThongBaoID" />
+                    <label>Xác nhận xóa các thông báo này ?</label>
+                    <br />
+                    <div class="modal-footer">
+                        <div class="group-button-action">
+                            <button onclick="CloseModal()" type="button" class="btn btn-close-form btn-outline-primary" data-dismiss="modal">Hủy bỏ</button>
+                            <button id="deletes" type="button" class="btn btn-submit-form btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var APIURL = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+    var dataDeThi = [];
+    $(document).ready(function () {
+        $('#dataGirdThongBao').DataTable({
+            "autoWidth": false,
+            "ordering": false,
+            "bInfo": false,
+            "bLengthChange": false,
+            "bPaginate": false,
+            "filter": true,
+            "searching": false,
+            "drawCallback": function () {
+                $('.dataTables_paginate > .pagination a').addClass('paginate_button');
+            },
+            "language": {
+                "sProcessing": "Đang xử lý...",
+                "sLengthMenu": "Hiện: _MENU_",
+                "sZeroRecords": "Không có dữ liệu",
+                "sEmptyTable": "Bảng trống",
+                "sInfo": "Hiện dòng _START_ đến _END_ trong tổng _TOTAL_ dòng",
+                "sInfoEmpty": "Hiện dòng 0 đến 0 trong tổng 0 dòng",
+                "sSearch": "Tìm kiếm",
+                "sLoadingRecords": "Đang tải...",
+                paginate: {
+                    next: '<i class="fa fa-chevron-right"></i>',
+                    previous: '<i class="fa fa-chevron-left"></i>'
+                }
+            },
+            "ajax": {
+                url: APIURL + '/api/ThongBaoApi/GetsByMaSV?maSV=' + '@masv',
+                type: "post",
+                async: false,
+                dataSrc: function (data) {
+                    if (data != null && data != "") {
+                        dataDeThi = data;
+                        for (var i = 0; i < data.length; i++) {
+                            data[i].stt = i + 1;
+                            data[i].ThoiGianGui = formatDate(data[i].ThoiDiemGui);
+                        }
+                    }
+                    return data;
+                }
+            },
+            "rowCallback": function (row, data, index) {
+                // cập nhật giá trị của cột 'stt' theo thứ tự tăng dần
+                $('td:eq(1)', row).html(index + 1);
+            },
+            columnDefs: [
+                {
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        return '<input class="call-checkbox" type="checkbox" value="' + data + '"/>';
+                    }
+                },
+            ],
+            deferRender: true,
+            "columns": [
+                { data: "ThongBaoID", "width": "40px", "class": "text-center" },
+                { data: "stt", "width": "40px", "class": "stt-text text-center" },
+                { data: "NoiDung", "width": "", "class": "text_left" },
+                { data: "ThoiGianGui", "width": "200px", "class": "text-center" },
+            ]
+        });
+        $('#show-deletes').on('click', function () {
+            var oTable = $('#dataGirdThongBao').dataTable();
+            var arrID = [];
+            var rows_selected = oTable.$(".call-checkbox:checked", { "page": "all" });
+            rows_selected.each(function (index, elem) {
+                arrID.push($(elem).val());
+            });
+            let list = arrID.join(",");
+            if (checkEmptyBlank(list)) {
+                alert("Chưa chọn thông báo cần xóa");
+            } else {
+                $('#listThongBaoID').val(list);
+                $('#modalThongBaoDeletes').modal('show');
+            }
+        });
+        $('#deletes').on('click', function () {
+            var listID = $('#listThongBaoID').val();
+            if (!checkEmptyBlank(listID)) {
+                $.ajax({
+                    type: 'delete',
+                    async: false,
+                    url: APIURL + '/api/ThongBaoApi/Deletes?listID=' + listID,
+                    contentType: 'application/json: charset=uft-8',
+                    success: function (data) {
+                        $('#modalThongBaoDeletes').modal('hide');
+                        $('#dataGirdThongBao').DataTable().ajax.reload().draw();
+                    },
+                    error: function (err) {
+                        alert('Lỗi ! Xóa thông báo thất bại');
+                    }
+                });
+            }
+        });
+    });
+
+    //format mmDDyyyyHHmmSS
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear(),
+            hour = d.getHours(),
+            minute = d.getMinutes()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        if (hour < 10) hour = '0' + hour
+        if (minute < 10) minute = '0' + minute
+        return `${day}/${month}/${year} ${hour}:${minute}`
+    }
+    // Kiểm tra chuỗi rỗng
+    function checkEmptyBlank(str) {
+        if (str.trim().length === 0 || str == null) {
+            return true
+        }
+        return false
+    }
+    //Close modal
+    function CloseModal() {
+        $('#modalThongBaoDeletes').modal('hide');
+    }
+</script>
